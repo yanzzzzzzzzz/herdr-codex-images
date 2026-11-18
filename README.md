@@ -5,11 +5,37 @@
 Inline image artifacts in Codex CLI, with clickable original-image inspection in Herdr.
 One repository, two independently managed native components.
 
-**Status: source preview.** This repository currently publishes the source patches,
-compatibility manifest, validation results, and a guarded patch application tool.
-Prebuilt releases, a one-command installer, and marketplace packaging are planned;
-they are not available in this initial revision. This is an independent project,
-not an official Herdr or OpenAI release.
+**Status: binary preview for macOS Apple Silicon.** Prebuilt Herdr, Codex and core
+are available through GitHub Releases. Windows remains source-only. This is an
+independent project, not an official Herdr or OpenAI release.
+
+## Install on a Mac
+
+Run one command in Terminal:
+
+```sh
+curl -fsSL https://github.com/yanzzzzzzzzz/herdr-codex-images/releases/download/v0.1.0-preview.1/install.sh | sh
+```
+
+The installer downloads a checksum-verified prebuilt archive and opens **Herdr Images**.
+It needs no compiler, Git, Python, sudo, existing Herdr, or existing Codex installation.
+The preview app is locally signed, not an Apple-notarized release.
+
+Your original Herdr app, projects, credentials and running terminals are preserved.
+On first install, settings and spaces are copied into the new app's separate config;
+subsequent changes are independent. Existing core sessions remain available.
+New Herdr shells select the bundled Codex through a backed-up, managed `.zshrc`
+block. Other shells retain their existing Codex. Start a new Codex process to use it.
+
+```sh
+~/.local/bin/herdr-images doctor
+~/.local/bin/herdr-images update
+~/.local/bin/herdr-images rollback
+~/.local/bin/herdr-images uninstall
+```
+
+Uninstall removes only managed links and the shell block, keeping backups and settings.
+See [installation details](docs/installation.md) for paths, offline installation and recovery.
 
 ## Features
 
@@ -34,8 +60,8 @@ requires the reference emitted by the Codex component.
 | Cross-machine originals | Existing Herdr core connection | Windows client → macOS host |
 
 Exact commits and patch SHA-256 values are in [manifest.json](manifest.json).
-Other platforms and upstream versions have not been validated. No prebuilt binaries
-are included in this repository.
+Other platforms and upstream versions have not been validated. Prebuilt binaries
+are release assets, separate from Git source files.
 
 ## Use the source patches
 

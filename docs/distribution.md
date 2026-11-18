@@ -1,28 +1,22 @@
-# Distribution plan
+# Distribution
 
-This initial revision is a source preview. There is no published runtime archive,
-marketplace entry, or one-command binary installer yet.
+The macOS Apple Silicon preview release contains a versioned prebuilt archive,
+SHA256SUMS, and a one-command installer. It includes patched Herdr/Codex, official
+Herdr core, Codex companions/resources, and upstream licenses/notices.
 
-The intended distribution keeps independent native components behind one project:
+Installation is per-user and side-by-side. First-run app config is copied;
+existing projects, the original app, and core sessions are preserved. Cached
+archives and stripped release symbols reduce download and install time.
+`doctor`, `update`, `rollback`, and `uninstall` need no compiler or Python.
 
-- A plugin/marketplace entry can provide setup, doctor, update, and uninstall skills.
-- Versioned GitHub Releases can hold platform archives, a compatibility manifest,
-  SHA-256 values, source patches, and upstream notices.
-- Setup should allow Codex-only, Herdr-only, or the validated combined installation.
-- Native binaries should be staged separately, checked, and backed up before activation.
-  Existing official installations and active sessions should remain recoverable.
-- Updates must check base-version compatibility; application state and credentials
-  must not be included in release archives.
+This is a locally ad-hoc signed preview, not an Apple-notarized release.
+Windows prebuilt packages, hosted native builds, notarization and a plugin
+marketplace entry remain future work. Source patches remain independently usable.
 
-Current distribution references:
+Maintainers use `tools/package_macos.py` with explicitly supplied validated binaries.
+No user app homes, credentials, sessions or project files enter the archives.
+CI tests installer preservation and recovery using disposable homes.
 
-- [Codex HUD](https://github.com/konnga/codex-hud): marketplace entry, setup/doctor
-  skills, managed runtime, and separate release archives/checksums. Its own runtime
-  does not replace the official Codex binary; this project's native patch deployment
-  would need to be clearly disclosed as a different operation.
-- [Herdr Islands](https://github.com/Yofukashiya/herdr-islands): shell/PowerShell
-  installers, component selection, validation, and settings-preserving updates.
-- [Herdr Reader](https://github.com/giacolees/herdr-reader): a mod plus a rendering
-  helper, with images displayed in a separate reader pane.
-
-These are design references, not dependencies or third-party installers run by this repository.
+Design references: [Codex HUD](https://github.com/konnga/codex-hud),
+[Herdr Islands](https://github.com/Yofukashiya/herdr-islands), and
+[Herdr Reader](https://github.com/giacolees/herdr-reader).

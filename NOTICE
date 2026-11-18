@@ -7,4 +7,7 @@ Herdr app source: https://github.com/herdrdev/herdr-app
 OpenAI Codex source: https://github.com/openai/codex
 
 Upstream license copies and the Codex NOTICE are preserved in licenses/.
-No upstream application binaries are redistributed in this source-preview revision.
+The macOS preview release redistributes patched Herdr app and Codex binaries,
+the official Herdr core, and Codex platform companions/resources. Their licenses
+and notices are included in the release. Herdr core source:
+https://github.com/herdrdev/herdr-core

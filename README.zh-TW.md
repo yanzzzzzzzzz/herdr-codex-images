@@ -5,9 +5,33 @@
 在 Codex CLI 回覆中直接預覽圖片，並在 Herdr 點擊終端圖片查看清晰原圖。
 同一個專案維護 Herdr、Codex 兩個可分別使用的原生元件。
 
-**目前為原始碼預覽版。** 已公開完整修補檔、相容版本、驗證紀錄及修補工具。
-預先編譯套件、一鍵安裝與 plugin marketplace 入口仍是後續項目；首版沒有提供
-可直接安裝的二進位檔。這是獨立整合專案，並非 Herdr 或 OpenAI 官方版本。
+**目前提供 Mac Apple Silicon 預編譯預覽版。** Windows 仍採原始碼建置。
+這是獨立整合專案，並非 Herdr 或 OpenAI 官方版本。
+
+## Mac 一個指令安裝
+
+在終端執行：
+
+```sh
+curl -fsSL https://github.com/yanzzzzzzzzz/herdr-codex-images/releases/download/v0.1.0-preview.1/install.sh | sh
+```
+
+安裝器驗證下載雜湊後，自動開啟 **Herdr Images**。不需要編譯器、Git、Python、sudo，
+也不要求先安裝 Herdr 或 Codex。預覽版採本機簽章，尚非 Apple 公證版本。
+
+原本的 Herdr、專案、登入資料與執行中的終端均保留。首次將設定與空間複製到獨立設定目錄，
+之後兩個 App 各自保存設定；既有 core 工作階段仍可使用。安裝器備份 `.zshrc`，
+只加入一段可移除的設定，讓新的 Herdr 終端使用圖片版 Codex；一般終端維持原本版本。
+既有 Codex 程序需重新啟動才會使用新執行檔。
+
+```sh
+~/.local/bin/herdr-images doctor     # 檢查安裝
+~/.local/bin/herdr-images update     # 更新
+~/.local/bin/herdr-images rollback   # 還原上一版
+~/.local/bin/herdr-images uninstall  # 解除整合，保留備份與設定
+```
+
+詳細路徑、離線安裝與還原方式見 [安裝說明](docs/installation.md)。
 
 ## 功能
 
@@ -59,7 +83,7 @@ CLI 沿用上游 32 MiB 限制；Herdr 原圖讀取的檔案上限為 32 MiB、�
 
 ## 後續發布
 
-規劃將 plugin 安裝入口與原生執行元件分開：由 setup／doctor／uninstall 管理安裝，
-GitHub Releases 提供分平台套件與雜湊。詳細範圍見 [發布規劃](docs/distribution.md)。
+目前 GitHub Releases 提供 Mac 原生套件與雜湊，安裝指令負責下載、驗證及可還原的啟用。
+Windows 預編譯套件與 plugin marketplace 入口尚待完成。詳細範圍見 [發布規劃](docs/distribution.md)。
 
 Apache-2.0；上游授權與聲明收錄於 [licenses](licenses/)。

@@ -17,3 +17,14 @@ jobs:
         run: python3 -m unittest discover -s tests -v
       - name: Verify bundled patch integrity
         run: python3 tools/patch_component.py --validate
+  macos-installer:
+    runs-on: macos-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Check shell syntax
+        run: sh -n install.sh && sh -n tools/herdr-images.sh
+      - name: Test non-destructive installation, update, rollback and uninstall
+        run: python3 -m unittest discover -s tests -v
