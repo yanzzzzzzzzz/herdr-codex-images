@@ -17,12 +17,12 @@ REPO = Path(__file__).resolve().parents[1]
 
 
 def run(*args):
-    return subprocess.run(args, check=True, text=True, capture_output=True).stdout.strip()
+    return subprocess.run(args, check=True, text=True, encoding="utf-8", errors="replace", capture_output=True).stdout.strip()
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    for name in ("herdr-dir", "herdr-binary", "codex-dir", "codex-binary", "core-dir", "output"):
+    for name in ("herdr-dir", "herdr-binary", "codex-dir", "codex-binary", "core-dir", "crt-dir", "output"):
         parser.add_argument("--" + name, type=Path, required=True)
     parser.add_argument("--version", default="v0.1.0-preview.2")
     args = parser.parse_args()
@@ -46,12 +46,28 @@ def main():
         (payload / "core").mkdir()
         for name in ("hc.exe", "herdr-core.exe"):
             shutil.copy2(args.core_dir / name, payload / "core" / name)
+        crt_files = sorted(args.crt_dir.glob("*.dll"))
+        assert {"vcruntime140.dll", "vcruntime140_1.dll"} <= {p.name.lower() for p in crt_files}
+        for directory in (payload / "herdr", payload / "codex/bin", payload / "core"):
+            for dll in crt_files:
+                shutil.copy2(dll, directory / dll.name)
         (payload / "tools").mkdir()
         for name in ("windows-common.ps1", "windows-manager.ps1"):
             shutil.copy2(REPO / "tools" / name, payload / "tools" / name)
+        shell = Path(os.environ["SystemRoot"]) / "System32/WindowsPowerShell/v1.0/powershell.exe"
+        quote = lambda path: "'" + str(path).replace("'", "''") + "'"
+        run(str(shell), "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command",
+            "Add-Type -Path " + quote(REPO / "tools/windows-shortcut.cs") +
+            " -OutputType Library -OutputAssembly " + quote(payload / "tools/windows-shortcut.dll"))
         for name in ("LICENSE", "NOTICE", "manifest.json"):
             shutil.copy2(REPO / name, payload / name)
         shutil.copytree(REPO / "licenses", payload / "licenses")
+        (payload / "licenses/Microsoft-CRT-NOTICE.txt").write_text(
+            "Microsoft Visual C++ Runtime\nCopyright Microsoft Corporation. All rights reserved.\n"
+            "Unmodified application-local runtime DLLs are included.\n"
+            "License: https://visualstudio.microsoft.com/license-terms/vs2026-ga-visualcpp-v14-redist-runtime/\n"
+            "Distribution: https://learn.microsoft.com/en-us/visualstudio/releases/2026/redistribution\n"
+        )
         versions = {
             "herdr": run(str(payload / "herdr/herdr-app.exe"), "--version"),
             "codex": run(str(payload / "codex/bin/codex.exe"), "--version"),
@@ -67,6 +83,8 @@ def main():
             "integration_commit": run("git", "-C", str(REPO), "rev-parse", "HEAD"),
             "herdr_sha256": hashlib.sha256(args.herdr_binary.read_bytes()).hexdigest(),
             "codex_sha256": hashlib.sha256(args.codex_binary.read_bytes()).hexdigest(),
+            "crt_files": {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in crt_files},
+            "shortcut_source_sha256": hashlib.sha256((REPO / "tools/windows-shortcut.cs").read_bytes()).hexdigest(),
             "signing": "independent preview; patched executables are not Authenticode-signed",
         }, indent=2) + "\n")
         files = sorted(p for p in payload.rglob("*") if p.is_file())

@@ -20,6 +20,7 @@ class PatchComponentTests(unittest.TestCase):
         self.checkout = self.root / "upstream"
         self.checkout.mkdir()
         self.run_git("init", "--quiet")
+        self.run_git("config", "core.autocrlf", "false")
         self.run_git("config", "user.name", "Fixture")
         self.run_git("config", "user.email", "fixture@example.invalid")
         (self.checkout / "sample.txt").write_bytes(b"before\n")

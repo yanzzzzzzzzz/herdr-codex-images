@@ -21,9 +21,12 @@ function Get-HciSha256([string]$Path) {
     try { [BitConverter]::ToString($sha.ComputeHash($stream)).Replace('-','').ToLowerInvariant() }
     finally { $sha.Dispose(); $stream.Dispose() }
 }
-if ($env:OS -ne 'Windows_NT' -or -not [Environment]::Is64BitOperatingSystem) { throw 'This release requires Windows x64.' }
+$nativeArchitecture = if ($env:PROCESSOR_ARCHITEW6432) { $env:PROCESSOR_ARCHITEW6432 } else { $env:PROCESSOR_ARCHITECTURE }
+if ($env:OS -ne 'Windows_NT' -or -not [Environment]::Is64BitOperatingSystem -or $nativeArchitecture -ne 'AMD64') { throw 'This release requires Windows x64.' }
 if ($Version -notmatch '^v[0-9][A-Za-z0-9.-]*$') { throw 'Invalid release tag.' }
 $InstallRoot = [IO.Path]::GetFullPath($InstallRoot)
+if ($InstallRoot.TrimEnd('\') -eq [IO.Path]::GetPathRoot($InstallRoot).TrimEnd('\')) { throw 'Use a dedicated installation directory, not a drive root.' }
+$InstallRoot = $InstallRoot.TrimEnd('\')
 if (Test-Path -LiteralPath $InstallRoot) {
     if ((Get-Item -LiteralPath $InstallRoot -Force).Attributes -band [IO.FileAttributes]::ReparsePoint) { throw 'Install root must not be a junction or symbolic link.' }
 }
@@ -86,6 +89,15 @@ try {
         $resolvedStage = [IO.Path]::GetFullPath($stage)
         if (-not $resolvedStage.StartsWith($InstallRoot + '\', [StringComparison]::OrdinalIgnoreCase)) { throw 'Unsafe cleanup target.' }
         if ((Get-Item -LiteralPath $resolvedStage -Force).Attributes -band [IO.FileAttributes]::ReparsePoint) { throw 'Refusing recursive cleanup of a link.' }
+        $directories = [Collections.Generic.Stack[string]]::new()
+        $directories.Push($resolvedStage)
+        while ($directories.Count) {
+            foreach ($child in [IO.Directory]::EnumerateFileSystemEntries($directories.Pop())) {
+                $attributes = [IO.File]::GetAttributes($child)
+                if ($attributes -band [IO.FileAttributes]::ReparsePoint) { throw 'Retaining staging directory because it contains a link; no linked files were deleted.' }
+                if ($attributes -band [IO.FileAttributes]::Directory) { $directories.Push($child) }
+            }
+        }
         Remove-Item -LiteralPath $resolvedStage -Recurse -Force
     }
     if ($lock) { $lock.Dispose() }

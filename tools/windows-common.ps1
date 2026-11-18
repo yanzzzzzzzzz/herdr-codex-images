@@ -1,5 +1,10 @@
 $ErrorActionPreference = 'Stop'
 $script:HciOwner = 'herdr-codex-images/windows/v1'
+$script:HciShortcutAssembly = Join-Path $PSScriptRoot 'windows-shortcut.dll'
+
+function Initialize-HciShortcut {
+    if (-not ('HciWindowsShortcutV1' -as [type])) { $null = [Reflection.Assembly]::Load([IO.File]::ReadAllBytes($script:HciShortcutAssembly)) }
+}
 
 function Get-HciSha256([string]$Path) {
     $stream = [IO.File]::OpenRead([IO.Path]::GetFullPath($Path))
@@ -56,7 +61,9 @@ function Get-HciProfileDocument([string]$Path) {
     if ($depth -eq 20) { throw 'Profile symbolic-link loop.' }
     $encoding = [Text.UTF8Encoding]::new($true)
     $text = ''
-    if (Test-Path -LiteralPath $pathFull -PathType Leaf) {
+    $bytes = [byte[]]@()
+    $existed = Test-Path -LiteralPath $pathFull -PathType Leaf
+    if ($existed) {
         $bytes = [IO.File]::ReadAllBytes($pathFull)
         $offset = 0
         if ($bytes.Length -ge 3 -and $bytes[0] -eq 239 -and $bytes[1] -eq 187 -and $bytes[2] -eq 191) { $offset = 3 }
@@ -68,7 +75,7 @@ function Get-HciProfileDocument([string]$Path) {
         }
         $text = $encoding.GetString($bytes, $offset, $bytes.Length - $offset)
     }
-    [pscustomobject]@{ Path=$pathFull; Text=$text; Encoding=$encoding }
+    [pscustomobject]@{ Path=$pathFull; Text=$text; Encoding=$encoding; Bytes=$bytes; Existed=$existed }
 }
 
 function Remove-HciProfileBlock([string]$Text) {
@@ -144,9 +151,10 @@ if ($env:HC_TERMINAL_ID) {
         $documentsToWrite += [pscustomobject]@{ Document=$document; Text=$candidate }
     }
     $shortcut = if (-not $NoShortcut) { Join-Path $ShortcutDirectory 'Herdr Images.lnk' } else { $null }
+    if ($shortcut) { Initialize-HciShortcut }
     if ($shortcut -and (Test-Path -LiteralPath $shortcut)) {
-        $link = (New-Object -ComObject WScript.Shell).CreateShortcut($shortcut)
-        if ($link.Description -ne $script:HciOwner -or -not $link.Arguments.Contains($Root + '\bootstrap.ps1')) { throw 'Unmanaged Herdr Images shortcut exists.' }
+        $link = [HciWindowsShortcutV1]::Load($shortcut)
+        if ($link[0] -ne $script:HciOwner -or -not $link[1].Contains($Root + '\bootstrap.ps1')) { throw 'Unmanaged Herdr Images shortcut exists.' }
     }
     Test-HciRuntime $Payload
     $destination = Assert-HciChild $Root (Join-Path $Root ('versions\' + $Version))
@@ -181,18 +189,28 @@ if ($state.owner -ne 'herdr-codex-images/windows/v1' -or $state.version -notmatc
     [IO.File]::WriteAllText((Join-Path $Root 'bootstrap.ps1'),$bootstrap,[Text.UTF8Encoding]::new($true))
     $cmd = "@echo off`r`nrem HerdrCodexImages managed entry v1`r`npowershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File `"%~dp0bootstrap.ps1`" %*`r`n"
     [IO.File]::WriteAllText((Join-Path $Root 'herdr-images.cmd'),$cmd,[Text.Encoding]::ASCII)
-    foreach ($change in $documentsToWrite) { Save-HciProfile $Root $change.Document $change.Text }
     $previous = if ($old -and $old.version -ne $Version) { $old.version } elseif ($old) { $old.previous } else { $null }
     $state = [ordered]@{ owner=$script:HciOwner; version=$Version; previous=$previous; profiles=@($ProfilePaths); shortcut=$shortcut }
-    Set-HciState $Root $state
+    $written = @()
+    try {
+        foreach ($change in $documentsToWrite) {
+            $written += $change.Document
+            Save-HciProfile $Root $change.Document $change.Text
+        }
+        Set-HciState $Root $state
+    } catch {
+        $installError = $_
+        foreach ($document in $written) {
+            if ($document.Existed) {
+                $current = [IO.File]::ReadAllBytes($document.Path)
+                if ([Convert]::ToBase64String($current) -ne [Convert]::ToBase64String($document.Bytes)) { [IO.File]::WriteAllBytes($document.Path,$document.Bytes) }
+            } elseif (Test-Path -LiteralPath $document.Path) { Remove-Item -LiteralPath $document.Path }
+        }
+        throw $installError
+    }
     if ($shortcut) {
         [IO.Directory]::CreateDirectory($ShortcutDirectory) | Out-Null
-        $link = (New-Object -ComObject WScript.Shell).CreateShortcut($shortcut)
-        $link.TargetPath = Get-HciPowerShell
-        $link.Arguments = '-NoLogo -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "' + $Root + '\bootstrap.ps1" open'
-        $link.WorkingDirectory = $env:USERPROFILE
-        $link.IconLocation = Join-Path $destination 'herdr\herdr-app.exe'
-        $link.Description = $script:HciOwner
-        $link.Save()
+        $arguments = '-NoLogo -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "' + $Root + '\bootstrap.ps1" open'
+        [HciWindowsShortcutV1]::Save($shortcut,(Get-HciPowerShell),$arguments,$env:USERPROFILE,(Join-Path $destination 'herdr\herdr-app.exe'),$script:HciOwner)
     }
 }

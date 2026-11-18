@@ -51,8 +51,9 @@ switch ($Command) {
                 Save-HciProfile $Root $document (Remove-HciProfileBlock $document.Text)
             }
             if ($state.shortcut -and (Test-Path -LiteralPath $state.shortcut)) {
-                $link = (New-Object -ComObject WScript.Shell).CreateShortcut($state.shortcut)
-                if ($link.Description -eq $script:HciOwner -and $link.Arguments.Contains($Root + '\bootstrap.ps1')) { Remove-Item -LiteralPath $state.shortcut }
+                Initialize-HciShortcut
+                $link = [HciWindowsShortcutV1]::Load($state.shortcut)
+                if ($link[0] -eq $script:HciOwner -and $link[1].Contains($Root + '\bootstrap.ps1')) { Remove-Item -LiteralPath $state.shortcut }
             }
             foreach ($name in @('bootstrap.ps1','herdr-images.cmd','install.json')) {
                 $path = Assert-HciChild $Root (Join-Path $Root $name)

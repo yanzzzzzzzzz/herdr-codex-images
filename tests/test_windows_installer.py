@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import stat
 import subprocess
 import tempfile
 import unittest
@@ -26,10 +27,16 @@ class WindowsInstallerTests(unittest.TestCase):
 class Fixture { public static int Main(string[] args) {
 string name=Path.GetFileName(Assembly.GetExecutingAssembly().Location);
 if(Array.IndexOf(args,"--version")>=0) Console.WriteLine(name=="herdr-app.exe"?"herdr-app 0.1.16":name=="codex.exe"?"codex-cli 0.169.1":name=="rg.exe"?"ripgrep test":"hc 0.1.21");
+if(Array.IndexOf(args,"--hold")>=0) Console.ReadLine();
 return 0; } }'''
         command = "Add-Type -TypeDefinition '" + code.replace("'", "''") + "' -OutputType ConsoleApplication -OutputAssembly '" + str(cls.fixture).replace("'", "''") + "'"
         result=cls.ps(command)
         if result.returncode or not cls.fixture.exists():
+            raise RuntimeError(result.stdout+result.stderr)
+        cls.shortcut=Path(cls.build.name)/'windows-shortcut.dll'
+        command="Add-Type -Path '"+str(REPO/'tools/windows-shortcut.cs').replace("'","''")+"' -OutputType Library -OutputAssembly '"+str(cls.shortcut).replace("'","''")+"'"
+        result=cls.ps(command)
+        if result.returncode or not cls.shortcut.exists():
             raise RuntimeError(result.stdout+result.stderr)
 
     @classmethod
@@ -73,6 +80,7 @@ return 0; } }'''
         (payload / "tools").mkdir()
         for name in ["windows-common.ps1", "windows-manager.ps1"]:
             shutil.copy2(REPO / "tools" / name, payload / "tools" / name)
+        shutil.copy2(self.shortcut,payload/'tools/windows-shortcut.dll')
         (payload / "VERSION").write_text(version + "\n")
         files = sorted(p for p in payload.rglob("*") if p.is_file())
         (payload / "FILES.sha256").write_text("".join(f"{hashlib.sha256(p.read_bytes()).hexdigest()}  {p.relative_to(payload).as_posix()}\n" for p in files))
@@ -189,7 +197,7 @@ return 0; } }'''
         profile = "'" + str(self.profiles[0]).replace("'", "''") + "'"
         result = self.ps("$ErrorActionPreference='Stop'; Remove-Item Env:HC_TERMINAL_ID -ErrorAction SilentlyContinue; $before=$env:Path; . " + profile + "; if($env:Path -ne $before){throw 'Normal shell PATH changed'}; $env:HC_TERMINAL_ID='test'; . " + profile + "; (Get-Command codex.exe).Source")
         self.assertEqual(result.returncode,0,result.stdout+result.stderr)
-        self.assertIn(str(self.root / "versions/v0.1.0-test.1/codex/bin/codex.exe"),result.stdout)
+        self.assertTrue(os.path.samefile(self.root / "versions/v0.1.0-test.1/codex/bin/codex.exe",result.stdout.strip()))
 
     def test_start_menu_entry_does_not_replace_original_shortcut(self):
         shortcuts=self.home/'shortcuts'
@@ -210,6 +218,31 @@ return 0; } }'''
         self.install(self.package(),success=False,NoShortcut=False)
         self.assertEqual(original.read_bytes(),b'unrelated shortcut')
         self.assert_originals(profiles=True)
+
+    def test_profile_write_failure_restores_already_written_profile(self):
+        self.profiles[1].chmod(stat.S_IREAD)
+        try:
+            self.install(self.package(),success=False)
+            self.assert_originals(profiles=True)
+            self.assertFalse((self.root/'install.json').exists())
+        finally:
+            self.profiles[1].chmod(stat.S_IWRITE)
+
+    def test_update_and_uninstall_keep_running_version_alive(self):
+        package=self.package()
+        self.install(package)
+        executable=self.root/'versions'/package[0]/'herdr/herdr-app.exe'
+        process=subprocess.Popen([str(executable),'--hold'],stdin=subprocess.PIPE,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,creationflags=subprocess.CREATE_NO_WINDOW)
+        try:
+            self.assertIsNone(process.poll())
+            self.install(self.package('v0.1.0-test.2'))
+            self.assertIsNone(process.poll())
+            self.manage('uninstall')
+            self.assertIsNone(process.poll())
+            self.assertTrue(executable.exists())
+        finally:
+            process.stdin.close()
+            process.wait(timeout=10)
 
 
 if __name__ == "__main__":
