@@ -33,6 +33,11 @@ return 0; } }'''
         result=cls.ps(command)
         if result.returncode or not cls.fixture.exists():
             raise RuntimeError(result.stdout+result.stderr)
+        cls.gui_fixture = Path(cls.build.name) / "gui-fixture.exe"
+        command = "Add-Type -TypeDefinition '" + code.replace("'", "''") + "' -OutputType WindowsApplication -OutputAssembly '" + str(cls.gui_fixture).replace("'", "''") + "'"
+        result = cls.ps(command)
+        if result.returncode or not cls.gui_fixture.exists():
+            raise RuntimeError(result.stdout+result.stderr)
         cls.shortcut=Path(cls.build.name)/'windows-shortcut.dll'
         command="Add-Type -Path '"+str(REPO/'tools/windows-shortcut.cs').replace("'","''")+"' -OutputType Library -OutputAssembly '"+str(cls.shortcut).replace("'","''")+"'"
         result=cls.ps(command)
@@ -76,7 +81,7 @@ return 0; } }'''
         for name in ["herdr/herdr-app.exe", "codex/bin/codex.exe", "core/hc.exe", "core/herdr-core.exe", "codex/codex-path/rg.exe"]:
             target = payload / name
             target.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(self.fixture, target)
+            shutil.copy2(self.gui_fixture if name == "herdr/herdr-app.exe" else self.fixture, target)
         (payload / "tools").mkdir()
         for name in ["windows-common.ps1", "windows-manager.ps1"]:
             shutil.copy2(REPO / "tools" / name, payload / "tools" / name)

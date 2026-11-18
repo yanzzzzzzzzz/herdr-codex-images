@@ -109,7 +109,9 @@ function Test-HciRuntime([string]$Directory) {
         if ((Get-HciSha256 $path) -ine $hash) { throw "Runtime mismatch: $relative" }
     }
     foreach ($entry in @(@('herdr\herdr-app.exe','herdr-app 0.1.16'), @('codex\bin\codex.exe','codex-cli 0.169.1'), @('core\hc.exe','hc 0.1.21'))) {
-        $version = & (Join-Path $Directory $entry[0]) --version
+        # Windows PowerShell does not wait for a GUI executable unless its output
+        # is consumed by a pipeline. Herdr is a Windows-subsystem executable.
+        $version = & (Join-Path $Directory $entry[0]) --version | Out-String
         if ($LASTEXITCODE -ne 0 -or $version.Trim() -ne $entry[1]) { throw "Unexpected runtime: $($entry[0])" }
     }
 }
