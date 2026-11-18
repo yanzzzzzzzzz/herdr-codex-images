@@ -29,6 +29,34 @@ The remote test needs `HERDR_PREVIEW_REMOTE_TEST_MACHINE`,
 An initial sandboxed full run hit a Windows handle restriction; the subsequent
 single-threaded run outside that restriction passed.
 
+## Herdr: macOS ARM64 installation from GitHub
+
+On 2026-11-18, a fresh clone of the public integration repository was used to
+validate both patch hashes and apply them to clean, pinned upstream checkouts.
+All five packaging tests passed on Python 3.9.6.
+
+- Herdr terminal tests: **86 passed, 1 ignored**.
+- Full application unit tests: **496 passed, 3 ignored**, single-threaded.
+- Release build: passed with Rust 1.95.0 and Zig 0.16.0.
+- Existing Herdr app/state were backed up before the user-authorized full reset.
+- The app bundle was installed, locally signed with upstream entitlements, and
+  passed `codesign --verify --deep --strict`.
+- The installed desktop app opened without reported errors. A dedicated terminal
+  displayed an 800×400 PNG through Kitty graphics; its first-run welcome window
+  remained visible over part of the fixture. This was not a real-pointer click test.
+
+The initial full test run failed seven unchanged file-watcher tests because system
+Git required a full-Xcode license. Re-running with working Homebrew Git and CLT
+passed all non-ignored tests. Test build-time dylibs needed debug information and
+`build-override.strip="none"` on this macOS; see the component build notes.
+
+The Codex release build reused an existing cache only after verifying the exact
+upstream HEAD, changed-file set, and byte-for-byte contents of all ten modified
+files against the fresh GitHub-patched checkout. The full platform bundle,
+including companion executables and resources, was installed separately and checked.
+Version/help/resume-help, companion search, and Herdr-only launcher resolution passed.
+No paid model request was made during this installation smoke test.
+
 ## Codex: macOS ARM64
 
 - Assistant-image parsing: 1 test passed, also included in the message tests below.

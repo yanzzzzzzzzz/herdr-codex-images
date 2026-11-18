@@ -29,7 +29,7 @@ requires the reference emitted by the Codex component.
 
 | Component | Pinned upstream | Validated environment |
 | --- | --- | --- |
-| Herdr app | `v0.1.16` | Windows x64 |
+| Herdr app | `v0.1.16` | Windows x64, macOS Apple Silicon |
 | Codex CLI | `rust-v0.169.1` | macOS Apple Silicon |
 | Cross-machine originals | Existing Herdr core connection | Windows client → macOS host |
 
@@ -39,7 +39,7 @@ are included in this repository.
 
 ## Use the source patches
 
-Python 3.10+ and Git are required for the patch tool. It checks the patch hash, exact
+Python 3.9+ and Git are required for the patch tool. It checks the patch hash, exact
 upstream commit, and clean checkout before changing files. It does not install apps,
 change shell profiles, or restart running programs.
 

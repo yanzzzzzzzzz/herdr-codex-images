@@ -28,6 +28,31 @@ This creates a build, not an installation. Back up your existing app before any 
 deployment. A source build does not enable Herdr's official automatic updates.
 Do not stop herdr-core or other people's terminals to deploy a GUI build.
 
+### macOS Apple Silicon
+
+The same pinned patch was built and installed on a Mac mini with Rust 1.95.0,
+Zig 0.16.0, and Apple's Command Line Tools. Configure `ZIG`, `SDKROOT`, and
+`LIBCLANG_PATH` for those installations. Where full Xcode is not configured,
+`DEVELOPER_DIR=/Library/Developer/CommandLineTools` selects the installed CLT
+for this build without changing the global developer directory.
+
+For tests on recent macOS, avoid the toolchain's stripped build-time dylib issue:
+
+```sh
+export CARGO_PROFILE_DEV_DEBUG=1 CARGO_PROFILE_TEST_DEBUG=1
+cargo +1.95.0 test --locked --bin herdr-app \
+  --config 'profile.dev.package."*".opt-level=0' \
+  --config 'profile.dev.build-override.strip="none"' \
+  --config 'profile.test.build-override.strip="none"' \
+  --jobs 2 -- --test-threads=1
+cargo +1.95.0 build --release --locked --jobs 2
+```
+
+Ensure `git` in the test environment works independently of any pending full-Xcode
+license prompt. Manual app deployment must retain the upstream macOS entitlements,
+including `com.apple.security.cs.allow-jit`, and verify the resulting app signature.
+Locally signed builds are not notarized distributable releases.
+
 The remote-original reader currently targets Unix hosts with `/usr/bin/perl`,
 `JSON::PP`, `Fcntl`, and `Time::HiRes`. It uses existing core connections, bounded
 chunks, and file-identity checks. A failed load keeps the transmitted preview.

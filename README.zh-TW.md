@@ -23,7 +23,7 @@ Codex 元件可在支援圖片協定的其他終端獨立使用。Herdr 元件�
 
 | 元件 | 上游版本 | 測試環境 |
 | --- | --- | --- |
-| Herdr app | v0.1.16 | Windows x64 |
+| Herdr app | v0.1.16 | Windows x64、macOS Apple Silicon |
 | Codex CLI | rust-v0.169.1 | macOS Apple Silicon |
 | 遠端原圖 | 既有 Herdr core 連線 | Windows 用戶端 → macOS 主機 |
 
@@ -41,7 +41,7 @@ cd herdr-codex-images
 - [Herdr 建置方式](components/herdr/README.md)
 - [Codex 建置方式](components/codex/README.md)
 
-工具需要 Python 3.10+ 及 Git。`python tools/patch_component.py --validate` 可驗證兩份
+工具需要 Python 3.9+ 及 Git。`python tools/patch_component.py --validate` 可驗證兩份
 修補檔；套用時會檢查 SHA-256、上游 commit 與工作目錄是否乾淨。
 工具只修改指定的原始碼 checkout，不安裝程式、不修改 shell 設定，也不重啟現有工作階段。
 
