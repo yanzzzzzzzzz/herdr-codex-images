@@ -237,3 +237,15 @@ Native terminal color tests require `NO_COLOR` to be unset and a color-capable
 `TERM`; otherwise four cursor-color expectations fail under the build runner's
 `NO_COLOR=1` environment. With that environment corrected, all 19 custom-terminal
 tests passed, including image persistence across redraws and overlay removal.
+
+After publishing v0.1.0-preview.3, the documented public `irm ... | iex` command
+passed on the real Windows account. An uncached public download followed by a
+same-version reinstall and app-open request took 89.72 s. This is not a cold
+first-install timing. All 10 previously live terminals remained live. Original
+app, settings, authentication, global Codex and shortcut hashes were unchanged;
+existing profile content was retained, `doctor` passed, and app status had no errors.
+GitHub validation run [44418741697](https://github.com/yanzzzzzzzzz/herdr-codex-images/actions/runs/44418741697)
+passed all three jobs (packaging, macOS installer and Windows installer).
+The final local `python -m unittest discover -s tests -v` run passed 26 tests with
+9 macOS-only skips; `python tools/patch_component.py --validate` and
+`git diff --check` also passed.

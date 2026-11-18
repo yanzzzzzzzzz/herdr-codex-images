@@ -40,6 +40,9 @@ $images = "$env:LOCALAPPDATA\Programs\herdr-codex-images\herdr-images.cmd"
 解除安裝保留備份、設定與執行中的程式。此為尚未簽章的預覽版。
 詳細路徑與還原方式見 [Windows 安裝說明](docs/installation-windows.md)。
 
+Windows 實測：首次從公開網址下載並重裝約 **90 秒**；離線首次安裝約 **31–35 秒**。
+套件約 228 MB，時間依電腦與網路而異，詳見[驗證紀錄](docs/validation.md)。
+
 ## Mac 一個指令安裝
 
 在終端執行：

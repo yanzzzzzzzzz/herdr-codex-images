@@ -43,6 +43,10 @@ $images = "$env:LOCALAPPDATA\Programs\herdr-codex-images\herdr-images.cmd"
 Uninstall retains backups, settings and running programs. Patched executables are
 an unsigned preview. See [Windows installation and recovery](docs/installation-windows.md).
 
+Measured Windows checks: **about 90 seconds** for an uncached public download and
+same-version reinstall; **31–35 seconds** for an offline first install. The ZIP is
+about 228 MB. Timings depend on the machine and network; see [validation](docs/validation.md).
+
 ## Install on a Mac
 
 Run one command in Terminal:
