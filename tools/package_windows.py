@@ -28,6 +28,9 @@ def main():
     args = parser.parse_args()
     if os.name != "nt" or not re.fullmatch(r"v[0-9][A-Za-z0-9.-]*", args.version):
         parser.error("Requires a Windows builder and valid release tag")
+    package_info = json.loads((args.codex_dir / "codex-package.json").read_text())
+    if package_info.get("version") != "0.169.1" or package_info.get("target") != "x86_64-pc-windows-msvc":
+        parser.error("Codex companions/resources must be the official Windows x64 0.169.1 bundle")
     args.output.mkdir(parents=True, exist_ok=True)
     asset = f"herdr-codex-images-{args.version}-windows-x64.zip"
     output = args.output / asset
@@ -85,6 +88,7 @@ def main():
         (payload / "build-info.json").write_text(json.dumps({
             "version": args.version, "platform": "windows-x64", "components": versions,
             "integration_commit": run("git", "-C", str(REPO), "rev-parse", "HEAD"),
+            "codex_bundle": package_info,
             "herdr_sha256": hashlib.sha256(args.herdr_binary.read_bytes()).hexdigest(),
             "codex_sha256": hashlib.sha256(args.codex_binary.read_bytes()).hexdigest(),
             "crt_files": {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in crt_files},

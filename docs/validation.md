@@ -149,3 +149,9 @@ signing rather than Apple notarization.
   original app and existing local/remote terminals remained live. No pointer input
   or paid model request was used. Screenshots with private workspace details were
   kept out of the public repository.
+- The official Codex `rust-v0.169.1` Windows x64 platform archive was downloaded
+  independently of the machine's existing Codex installation. Its GitHub asset
+  digest was verified:
+  `6fafb4a62e9d784eaeebabd3b1aa2539d48af753693f62800d73884fbf85600e`.
+  A packaging regression confirms mismatched companion versions are rejected
+  before any output archive is created.
