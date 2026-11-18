@@ -128,3 +128,24 @@ hashes were checked. Network timings are measurements, not a speed guarantee.
 Release binaries derive from source commit `a0e8dc60e3bce3fbbfb7d99dae44080a98afaf89`
 and the unchanged pinned native patches. They are preview assets, with local ad-hoc
 signing rather than Apple notarization.
+
+## Windows x64 installer and Herdr validation
+
+- `python -m unittest discover -s tests -v` on Windows: **21 passed**,
+  with nine macOS-only tests skipped. Windows PowerShell 5.1 runs the installer tests.
+- Coverage includes Unicode/spaced paths, profile encodings and later user edits,
+  PowerShell 7 syntax preserved by the PowerShell 5.1 installer, updates, rollback,
+  uninstall, a running old executable, tampering, unsafe archives, shortcut collisions,
+  redirected profiles and rollback after a profile write failure.
+- GitHub Actions ran the source-tool, macOS-installer and Windows-installer jobs
+  successfully for integration commit `51c2c82b9ba75cc0130ec69cdd7e25b3152b5ce2`.
+- Fresh pinned Herdr source plus the public patch built with Rust 1.95.0,
+  Zig 0.16.0 and libclang. `cargo +1.95.0 build --release --locked --jobs 1` passed.
+- `cargo +1.95.0 test --locked --bin herdr-app --config
+  'profile.dev.package."*".opt-level=0' --jobs 1 -- --test-threads=1`:
+  **448 passed, two ignored**.
+- The fresh GUI binary displayed an 800×400 PNG sent through a real local Windows
+  core/ConPTY terminal. Only dedicated test windows were opened and closed; the
+  original app and existing local/remote terminals remained live. No pointer input
+  or paid model request was used. Screenshots with private workspace details were
+  kept out of the public repository.

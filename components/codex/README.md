@@ -28,7 +28,8 @@ Building `codex-cli` alone does not create a complete distributable package. Pre
 the matching upstream platform bundle layout, including `bin/codex-code-mode-host`,
 `codex-path`, `codex-resources`, `codex-package.json`, and applicable notices. Replace
 only its `bin/codex` with the custom build. Keep the official installation available.
-No automated bundle installer is included in this source preview.
+Prebuilt bundles and installers are available from the repository README. Manual
+source deployment still needs the complete matching platform bundle above.
 
 Start a new process after deploying:
 

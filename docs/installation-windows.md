@@ -40,7 +40,7 @@ are not changed. Script launchers use a process-scoped execution policy.
 | `%LOCALAPPDATA%\Programs\herdr-codex-images` | Dedicated installation root |
 | `versions\<tag>` under that root | Retained versioned executables |
 | `install.json` under that root | Active/previous version and managed paths |
-| `app-home` under that root | Separate app settings and spaces |
+| `app-home` under that root | Separate app preferences and custom mod files; core layouts remain shared |
 | `backups` under that root | Exact profile snapshots and previous version state |
 | `herdr-images.cmd` under that root | Management entry |
 | `%LOCALAPPDATA%\Caches\herdr-codex-images\<tag>` | Reusable verified download |
