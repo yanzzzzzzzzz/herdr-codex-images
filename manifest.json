@@ -32,7 +32,7 @@
       "tag": "rust-v0.169.1",
       "commit": "c376cf7396eff83ce4c6ac61b9553df142e7a0be",
       "patch": "components/codex/patches/inline-images.patch",
-      "sha256": "dec67ef156dae1052220cd977877de9e43ebd3340517214f6f3634874054d34e"
+      "sha256": "1c071f4b2a2414b51840a85692b0d6770a5878b1106d0e524e8db6a036e24abb"
     }
   }
 }

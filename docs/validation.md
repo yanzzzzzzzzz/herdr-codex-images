@@ -229,3 +229,11 @@ profile content was retained. The app reported no errors. A new real Herdr
 PowerShell terminal selected the bundled 0.169.1 Codex and visibly rendered an
 800×400 PNG fixture. Its existing custom usage sidebar also worked. No pointer
 input or paid model request was used; private screenshots were not published.
+
+The subsequent source patch normalizes both sides of a test-only Windows path
+comparison (verbatim `\\?\` prefixes); it does not change production code.
+The published ZIP retains the exact build and hashes recorded above.
+Native terminal color tests require `NO_COLOR` to be unset and a color-capable
+`TERM`; otherwise four cursor-color expectations fail under the build runner's
+`NO_COLOR=1` environment. With that environment corrected, all 19 custom-terminal
+tests passed, including image persistence across redraws and overlay removal.

@@ -1538,10 +1538,10 @@ index d719a52..92863a1 100644
   "assert_cmd",
 diff --git a/codex-rs/tui/src/history_cell/assistant_images.rs b/codex-rs/tui/src/history_cell/assistant_images.rs
 new file mode 100644
-index 0000000..0c960f8
+index 0000000..e0848c2
 --- /dev/null
 +++ b/codex-rs/tui/src/history_cell/assistant_images.rs
-@@ -0,0 +1,104 @@
+@@ -0,0 +1,110 @@
 +//! Completed assistant replies preview linked local raster artifacts below their text.
 +//! Markdown parsing excludes code examples. Remote URLs never trigger network requests.
 +
@@ -1633,8 +1633,14 @@ index 0000000..0c960f8
 +        );
 +        let paths = local_paths(&markdown, dir.path());
 +        assert_eq!(paths.len(), 2);
-+        assert_eq!(paths[0].as_path(), first.canonicalize().unwrap());
-+        assert_eq!(paths[1].as_path(), second.canonicalize().unwrap());
++        assert_eq!(
++            paths[0].as_path().canonicalize().unwrap(),
++            first.canonicalize().unwrap()
++        );
++        assert_eq!(
++            paths[1].as_path().canonicalize().unwrap(),
++            second.canonicalize().unwrap()
++        );
 +        assert!(
 +            local_paths(
 +                "`![example](second.png)`\n```md\n[x](second.png)\n```",
