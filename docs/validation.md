@@ -96,3 +96,35 @@ Packaging-tool tests cover hash validation, version mismatch, dirty checkouts, r
 application, and actual application to a disposable Git repository.
 All five packaging-tool tests and both bundled patch-hash checks passed before publication.
 No application or model session was started for these packaging checks.
+
+## Prebuilt installer: v0.1.0-preview.1
+
+The macOS Apple Silicon preview is a side-by-side installation. It never resets
+the existing app/config, project files, credentials or core sessions.
+
+- `sh -n install.sh` and `sh -n tools/herdr-images.sh`: passed.
+- `python3 -m unittest discover -s tests -v` on macOS 27.2.1 / Python 3.9.6:
+  **14 passed** (nine installer regressions plus five source-tool tests).
+- Regression coverage includes unchanged original projects/settings, dotfiles
+  symlinks, repeated install, updates, rollback, later shell edits on uninstall,
+  corrupt archives, traversal paths, unrelated app collisions and runtime tampering.
+- The full runtime archive installed offline in **6.22 seconds**, excluding download;
+  doctor and uninstall passed, with fixture project/config hashes unchanged.
+- Installation directly from the public GitHub Release, including the download and
+  app-open request, took **23.00 seconds** on the test Mac/network.
+- Repeated installation with the verified cached archive took **6.37 seconds**.
+- Both pre-existing core terminals stayed live. Original app/settings/auth hashes
+  were unchanged, and the previous shell profile remained intact.
+- The separate app opened with no reported errors. A new real Herdr shell resolved
+  to the bundled Codex; its independent 800×400 PNG fixture rendered visibly.
+- No model request or real-pointer click was used. Native image-interaction tests
+  remain the interaction evidence described above.
+
+The archive is 174,313,825 bytes. Its Codex binary was reduced from 378,699,336 to
+279,630,592 bytes by stripping release-copy symbol/debug metadata and re-signing.
+Version/help/resume-help, companion search, app/core signatures and archive/file
+hashes were checked. Network timings are measurements, not a speed guarantee.
+
+Release binaries derive from source commit `a0e8dc60e3bce3fbbfb7d99dae44080a98afaf89`
+and the unchanged pinned native patches. They are preview assets, with local ad-hoc
+signing rather than Apple notarization.

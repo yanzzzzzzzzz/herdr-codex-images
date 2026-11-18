@@ -33,6 +33,9 @@ curl -fsSL https://github.com/yanzzzzzzzzz/herdr-codex-images/releases/download/
 
 詳細路徑、離線安裝與還原方式見 [安裝說明](docs/installation.md)。
 
+測試 Mac 的實測：**含下載 23 秒**、離線安裝 **6.22 秒**、有快取重裝 **6.37 秒**。
+下載約 174 MB；實際耗時依網路而異。詳見 [驗證紀錄](docs/validation.md)。
+
 ## 功能
 
 - Codex 回覆完成後，直接顯示本機圖片連結、Markdown 圖片及反引號中的圖片路徑。

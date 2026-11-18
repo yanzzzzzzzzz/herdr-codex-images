@@ -24,7 +24,7 @@ The preview app is locally signed, not an Apple-notarized release.
 Your original Herdr app, projects, credentials and running terminals are preserved.
 On first install, settings and spaces are copied into the new app's separate config;
 subsequent changes are independent. Existing core sessions remain available.
-New Herdr shells select the bundled Codex through a backed-up, managed `.zshrc`
+New Herdr zsh shells select the bundled Codex through a backed-up, managed `.zshrc`
 block. Other shells retain their existing Codex. Start a new Codex process to use it.
 
 ```sh
@@ -36,6 +36,10 @@ block. Other shells retain their existing Codex. Start a new Codex process to us
 
 Uninstall removes only managed links and the shell block, keeping backups and settings.
 See [installation details](docs/installation.md) for paths, offline installation and recovery.
+
+Measured on the test Mac: **23 seconds** including download, **6.22 seconds** offline,
+and **6.37 seconds** for a cached reinstall. Download size is about 174 MB; timing
+depends on your connection. See the [validation record](docs/validation.md).
 
 ## Features
 
