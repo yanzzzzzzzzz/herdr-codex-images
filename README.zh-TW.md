@@ -20,7 +20,7 @@ Mac mini 從 GitHub 安裝後的實際測試截圖：800×400 PNG 測試圖片�
 在 Windows PowerShell 5.1 或 PowerShell 7 執行：
 
 ```powershell
-irm https://github.com/yanzzzzzzzzz/herdr-codex-images/releases/download/v0.1.0-preview.2/install.ps1 | iex
+irm https://github.com/yanzzzzzzzzz/herdr-codex-images/releases/download/v0.1.0-preview.3/install.ps1 | iex
 ```
 
 安裝後自動開啟獨立的 **Herdr Images**。原 Herdr、專案、登入資料及執行中的工作階段都保留，

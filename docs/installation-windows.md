@@ -3,7 +3,7 @@
 Open Windows PowerShell 5.1 or PowerShell 7 and run:
 
 ```powershell
-irm https://github.com/yanzzzzzzzzz/herdr-codex-images/releases/download/v0.1.0-preview.2/install.ps1 | iex
+irm https://github.com/yanzzzzzzzzz/herdr-codex-images/releases/download/v0.1.0-preview.3/install.ps1 | iex
 ```
 
 The installer downloads a prebuilt ZIP, verifies SHA-256 and file hashes, creates
@@ -78,7 +78,7 @@ Download the ZIP, `SHA256SUMS` and `install.ps1` from the same release:
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 `
-  -Archive .\herdr-codex-images-v0.1.0-preview.2-windows-x64.zip `
+  -Archive .\herdr-codex-images-v0.1.0-preview.3-windows-x64.zip `
   -Checksums .\SHA256SUMS
 ```
 

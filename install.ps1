@@ -1,7 +1,7 @@
 # Windows PowerShell 5.1+; no admin, compiler, Git, Python, reset or process stop.
 [CmdletBinding()]
 param(
-    [string]$Version = 'v0.1.0-preview.2',
+    [string]$Version = 'v0.1.0-preview.3',
     [string]$Archive,
     [string]$Checksums,
     [string]$InstallRoot = (Join-Path $env:LOCALAPPDATA 'Programs\herdr-codex-images'),

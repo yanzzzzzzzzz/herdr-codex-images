@@ -13,6 +13,8 @@ import subprocess
 import tempfile
 import zipfile
 
+from check_codex_state import check_state_runtime
+
 REPO = Path(__file__).resolve().parents[1]
 
 
@@ -24,7 +26,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("herdr-dir", "herdr-binary", "codex-dir", "codex-binary", "core-dir", "crt-dir", "output"):
         parser.add_argument("--" + name, type=Path, required=True)
-    parser.add_argument("--version", default="v0.1.0-preview.2")
+    parser.add_argument("--version", default="v0.1.0-preview.3")
     args = parser.parse_args()
     if os.name != "nt" or not re.fullmatch(r"v[0-9][A-Za-z0-9.-]*", args.version):
         parser.error("Requires a Windows builder and valid release tag")
@@ -85,11 +87,13 @@ def main():
         run(str(payload / "codex/bin/codex.exe"), "--help")
         run(str(payload / "codex/bin/codex.exe"), "resume", "--help")
         run(str(payload / "codex/codex-path/rg.exe"), "--version")
+        state_compatibility = check_state_runtime(payload / "codex/bin/codex.exe")
         (payload / "VERSION").write_text(args.version + "\n")
         (payload / "build-info.json").write_text(json.dumps({
             "version": args.version, "platform": "windows-x64", "components": versions,
             "integration_commit": run("git", "-C", str(REPO), "rev-parse", "HEAD"),
             "codex_bundle": package_info,
+            "state_compatibility": state_compatibility,
             "herdr_sha256": hashlib.sha256(args.herdr_binary.read_bytes()).hexdigest(),
             "codex_sha256": hashlib.sha256(args.codex_binary.read_bytes()).hexdigest(),
             "crt_files": {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in crt_files},

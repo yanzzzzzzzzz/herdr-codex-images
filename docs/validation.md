@@ -131,7 +131,7 @@ signing rather than Apple notarization.
 
 ## Windows x64 installer and Herdr validation
 
-- `python -m unittest discover -s tests -v` on Windows: **22 passed**,
+- `python -m unittest discover -s tests -v` on Windows: **26 passed**,
   with nine macOS-only tests skipped. Windows PowerShell 5.1 runs the installer tests.
 - Coverage includes Unicode/spaced paths, profile encodings and later user edits,
   PowerShell 7 syntax preserved by the PowerShell 5.1 installer, updates, rollback,
@@ -159,41 +159,26 @@ signing rather than Apple notarization.
   A packaging regression confirms mismatched companion versions are rejected
   before any output archive is created.
 
-### Full Windows runtime archive
+### Existing Windows database compatibility
 
-The final pinned Codex source plus public patch passed the Windows x64 release
-build with Rust 1.95.0 / MSVC, release `opt-level=3`, thin LTO, one build job,
-`CARGO_PROFILE_RELEASE_DEBUG=0` and `CARGO_PROFILE_RELEASE_STRIP=debuginfo`:
+The official Windows Codex distribution embeds CRLF migration checksums. A native
+build with LF migration source bytes can pass version/help checks yet reject an
+existing database. The local integration check caught this before publication;
+the incompatible private preview was quarantined and its GitHub draft was not
+published. Existing user databases and original Codex executables were retained.
 
-```powershell
-cargo +1.95.0 --config windows-v8-source.toml build --locked --release -p codex-cli --bin codex --jobs 1
-```
+`tools/prepare_windows_codex.py` verifies the tracked SQL against the pinned Git
+source and prepares the 78 state migration source files as CRLF for Windows builds.
+It never reads or edits a user database. Source-preparation tests cover idempotency,
+dry runs and rejection of semantic SQL edits before any writes.
 
-The local Cargo source replacement in that command used the exact pinned rusty_v8
-archive to avoid Windows checkout path limits in unused Chromium submodules.
-The source commit remained `90a65f887a0c0f048f3784afbcb320b373c8a2e0`;
-archive SHA-256 was `32bc3dac906adf19f98ea73f5882bccbdf68cd5e194135fb1b68b14f86178721`.
-No external Cargo.lock package version changed. This is a maintainer build detail;
-installers do not fetch source or invoke Cargo.
+`tools/check_codex_state.py` seeds an isolated temporary database with a canonical
+Windows migration, starts an app-server without a model request, then verifies all
+62 resulting state migration checksums. The official Windows 0.169.1 runtime
+passed this check; the incompatible LF build was rejected. Packaging now requires
+this check in addition to version/help and companion checks. Checker tests also
+reject a zero-exit runtime that produces incorrect migration checksums.
 
-The 243,115,881-byte ZIP derives from integration commit
-`bfb71c1585adc26e8a0415f4a7c916f1d0e26367` and the unchanged native patches.
-Its SHA-256 is `2e6a40e5b6e49ece81b63ece91e66c72c2e6fb6a8aec4725932ea14f88fdba96`.
-The patched Codex executable is 385,966,592 bytes; SHA-256
-`31fff74eb361742d173828af323bc6f985c320cb9ea5b79ac28b3d09fb76570d`.
-Version/help/resume-help, companion search, official package metadata and all file
-hashes passed. ConPTY retains the upstream `conpty/x64/OpenConsole.exe` layout.
-
-Full ZIP installation, doctor, same-version reinstall and uninstall passed in
-separate isolated homes under both Windows PowerShell 5.1 and PowerShell 7.
-Project and original configuration hashes stayed unchanged; profile bytes were
-restored exactly. No GUI window or model request was needed for these checks.
-
-| Shell | Offline first install | Offline reinstall |
-| --- | --- | --- |
-| Windows PowerShell 5.1 | 24.22 s | 37.08 s |
-| PowerShell 7 | 25.11 s | 29.08 s |
-
-These are local measurements while other build checks were running, excluding
-download. They are not timing guarantees. The installer tests and all three
-GitHub Actions jobs also passed for the integration commit above.
+The source fixture and checksum references are attributed in
+[tests/fixtures](../tests/fixtures/README.md). macOS builds retain their original
+source format; this preparation step applies only to Windows.

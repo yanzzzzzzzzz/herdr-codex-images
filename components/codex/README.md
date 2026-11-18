@@ -24,6 +24,21 @@ the Windows pinned-source workaround. The patch also repairs
 the tag's lockfile workspace versions from `0.0.0` to `0.169.1`: 173 workspace entries,
 no external dependency upgrades.
 
+### Windows migration compatibility
+
+Before a Windows source build, run this from the integration repository root:
+
+```powershell
+python tools/prepare_windows_codex.py ../codex --apply
+```
+
+Official Windows Codex databases use CRLF checksums for embedded migration SQL.
+The preparation tool verifies every migration against the pinned Git source and
+changes only its source line endings. It never reads or modifies a user's database.
+This step is Windows-only; macOS builds retain their original source format.
+Windows packaging additionally starts an app-server against a synthetic existing
+database and verifies all 62 migration checksums before producing an archive.
+
 ## Deployment boundary
 
 Building `codex-cli` alone does not create a complete distributable package. Preserve

@@ -21,7 +21,7 @@ test image rendered directly in the Herdr terminal, without opening an external 
 Run in Windows PowerShell 5.1 or PowerShell 7:
 
 ```powershell
-irm https://github.com/yanzzzzzzzzz/herdr-codex-images/releases/download/v0.1.0-preview.2/install.ps1 | iex
+irm https://github.com/yanzzzzzzzzz/herdr-codex-images/releases/download/v0.1.0-preview.3/install.ps1 | iex
 ```
 
 This installs and opens a separate **Herdr Images** app. Your original Herdr,
