@@ -131,12 +131,15 @@ signing rather than Apple notarization.
 
 ## Windows x64 installer and Herdr validation
 
-- `python -m unittest discover -s tests -v` on Windows: **21 passed**,
+- `python -m unittest discover -s tests -v` on Windows: **22 passed**,
   with nine macOS-only tests skipped. Windows PowerShell 5.1 runs the installer tests.
 - Coverage includes Unicode/spaced paths, profile encodings and later user edits,
   PowerShell 7 syntax preserved by the PowerShell 5.1 installer, updates, rollback,
   uninstall, a running old executable, tampering, unsafe archives, shortcut collisions,
   redirected profiles and rollback after a profile write failure.
+- Installer fixtures use a Windows-subsystem GUI executable for Herdr. This catches
+  Windows PowerShell 5.1's asynchronous GUI execution behavior; version checks
+  consume output through a pipeline before checking the exit code.
 - GitHub Actions ran the source-tool, macOS-installer and Windows-installer jobs
   successfully for integration commit `51c2c82b9ba75cc0130ec69cdd7e25b3152b5ce2`.
 - Fresh pinned Herdr source plus the public patch built with Rust 1.95.0,
@@ -155,3 +158,42 @@ signing rather than Apple notarization.
   `6fafb4a62e9d784eaeebabd3b1aa2539d48af753693f62800d73884fbf85600e`.
   A packaging regression confirms mismatched companion versions are rejected
   before any output archive is created.
+
+### Full Windows runtime archive
+
+The final pinned Codex source plus public patch passed the Windows x64 release
+build with Rust 1.95.0 / MSVC, release `opt-level=3`, thin LTO, one build job,
+`CARGO_PROFILE_RELEASE_DEBUG=0` and `CARGO_PROFILE_RELEASE_STRIP=debuginfo`:
+
+```powershell
+cargo +1.95.0 --config windows-v8-source.toml build --locked --release -p codex-cli --bin codex --jobs 1
+```
+
+The local Cargo source replacement in that command used the exact pinned rusty_v8
+archive to avoid Windows checkout path limits in unused Chromium submodules.
+The source commit remained `90a65f887a0c0f048f3784afbcb320b373c8a2e0`;
+archive SHA-256 was `32bc3dac906adf19f98ea73f5882bccbdf68cd5e194135fb1b68b14f86178721`.
+No external Cargo.lock package version changed. This is a maintainer build detail;
+installers do not fetch source or invoke Cargo.
+
+The 243,115,881-byte ZIP derives from integration commit
+`bfb71c1585adc26e8a0415f4a7c916f1d0e26367` and the unchanged native patches.
+Its SHA-256 is `2e6a40e5b6e49ece81b63ece91e66c72c2e6fb6a8aec4725932ea14f88fdba96`.
+The patched Codex executable is 385,966,592 bytes; SHA-256
+`31fff74eb361742d173828af323bc6f985c320cb9ea5b79ac28b3d09fb76570d`.
+Version/help/resume-help, companion search, official package metadata and all file
+hashes passed. ConPTY retains the upstream `conpty/x64/OpenConsole.exe` layout.
+
+Full ZIP installation, doctor, same-version reinstall and uninstall passed in
+separate isolated homes under both Windows PowerShell 5.1 and PowerShell 7.
+Project and original configuration hashes stayed unchanged; profile bytes were
+restored exactly. No GUI window or model request was needed for these checks.
+
+| Shell | Offline first install | Offline reinstall |
+| --- | --- | --- |
+| Windows PowerShell 5.1 | 24.22 s | 37.08 s |
+| PowerShell 7 | 25.11 s | 29.08 s |
+
+These are local measurements while other build checks were running, excluding
+download. They are not timing guarantees. The installer tests and all three
+GitHub Actions jobs also passed for the integration commit above.

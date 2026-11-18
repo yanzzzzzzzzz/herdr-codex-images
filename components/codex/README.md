@@ -18,7 +18,9 @@ cargo +1.95.0 build --locked --release -p codex-cli --bin codex --jobs 2
 ```
 
 Use the [upstream native build prerequisites](https://github.com/openai/codex/blob/rust-v0.169.1/docs/install.md).
-The validated target is macOS ARM64 with Command Line Tools. The patch also repairs
+Native release builds were validated on macOS ARM64 with Command Line Tools and
+Windows x64 with MSVC. See the [validation record](../../docs/validation.md) for
+the Windows pinned-source workaround. The patch also repairs
 the tag's lockfile workspace versions from `0.0.0` to `0.169.1`: 173 workspace entries,
 no external dependency upgrades.
 
