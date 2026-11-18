@@ -185,6 +185,14 @@ return 0; } }'''
         self.manage("uninstall")
         self.assert_originals(profiles=True)
 
+    def test_powershell7_profile_syntax_is_preserved_by_51_installer(self):
+        self.profiles[1].write_bytes(b"# PowerShell 7 profile\r\n$value = $null ?? 'kept'\r\n")
+        self.baseline[self.profiles[1]]=self.profiles[1].read_bytes()
+        self.install(self.package())
+        self.assertTrue(self.profiles[1].read_bytes().startswith(self.baseline[self.profiles[1]]))
+        self.manage('uninstall')
+        self.assert_originals(profiles=True)
+
     def test_tampered_runtime_is_not_reused(self):
         package=self.package()
         self.install(package)

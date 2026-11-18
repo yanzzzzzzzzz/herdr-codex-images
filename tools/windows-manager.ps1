@@ -21,7 +21,7 @@ switch ($Command) {
     }
     { $_ -in @('status','ls','shot') } {
         $env:HERDR_APP_HOME = Join-Path $Root 'app-home'
-        & (Join-Path $runtime 'herdr\herdr-app.exe') $Command @Rest
+        & (Join-Path $runtime 'herdr\herdr-app.exe') $Command @Rest | Out-Host
         if ($LASTEXITCODE) { throw 'Herdr command failed.' }
     }
     'update' {

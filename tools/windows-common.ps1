@@ -146,8 +146,10 @@ if ($env:HC_TERMINAL_ID) {
         $block = $block.Replace('__ROOT64__',$root64).Replace("`r`n","`n").Replace("`n",$newline)
         $candidate = $text + $block + $newline
         $tokens=$null; $errors=$null
-        $null = [Management.Automation.Language.Parser]::ParseInput($candidate,[ref]$tokens,[ref]$errors)
-        if ($errors.Count) { throw "Profile syntax error; unchanged: $profile" }
+        # Validate our block only: a PowerShell 7 profile can contain valid syntax
+        # that the Windows PowerShell 5.1 installer cannot parse.
+        $null = [Management.Automation.Language.Parser]::ParseInput($block,[ref]$tokens,[ref]$errors)
+        if ($errors.Count) { throw "Managed profile block syntax error; unchanged: $profile" }
         $documentsToWrite += [pscustomobject]@{ Document=$document; Text=$candidate }
     }
     $shortcut = if (-not $NoShortcut) { Join-Path $ShortcutDirectory 'Herdr Images.lnk' } else { $null }
