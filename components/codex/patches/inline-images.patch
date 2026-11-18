@@ -1,0 +1,2192 @@
+diff --git a/codex-rs/Cargo.lock b/codex-rs/Cargo.lock
+index d719a52..92863a1 100644
+--- a/codex-rs/Cargo.lock
++++ b/codex-rs/Cargo.lock
+@@ -287,7 +287,7 @@ checksum = "2a4385e2e34eb35d6b3efe798b9eb88096925d87726c0798709bf56d9ed84af3"
+ 
+ [[package]]
+ name = "app_test_support"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "base64 0.22.1",
+@@ -1888,7 +1888,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-agent-extension"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "codex-core",
+@@ -1900,7 +1900,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-agent-graph-store"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-protocol",
+  "codex-state",
+@@ -1915,7 +1915,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-agent-identity"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "base64 0.22.1",
+@@ -1935,7 +1935,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-agent-message-board-client"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "chrono",
+@@ -1958,7 +1958,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-agent-message-board-extension"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-agent-message-board-client",
+  "codex-config",
+@@ -1977,7 +1977,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-agent-message-board-host"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "chrono",
+  "codex-agent-message-board-client",
+@@ -1994,7 +1994,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-agent-roles"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-config",
+  "codex-file-system",
+@@ -2007,7 +2007,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-analytics"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-app-server-protocol",
+  "codex-features",
+@@ -2035,7 +2035,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-ansi-escape"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "ansi-to-tui",
+  "pretty_assertions",
+@@ -2046,7 +2046,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-api"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "assert_matches",
+@@ -2084,7 +2084,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-app-server"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "app_test_support",
+@@ -2205,7 +2205,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-app-server-client"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-app-server",
+  "codex-app-server-protocol",
+@@ -2238,7 +2238,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-app-server-daemon"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "blake3",
+@@ -2268,7 +2268,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-app-server-protocol"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "codex-app-server-protocol-noop-macros",
+@@ -2303,11 +2303,11 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-app-server-protocol-noop-macros"
+-version = "0.0.0"
++version = "0.169.1"
+ 
+ [[package]]
+ name = "codex-app-server-test-client"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "clap",
+@@ -2330,7 +2330,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-app-server-transport"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "axum",
+@@ -2378,7 +2378,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-apply-patch"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "assert_cmd",
+@@ -2398,7 +2398,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-arg0"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "codex-apply-patch",
+@@ -2421,7 +2421,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-async-utils"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "pretty_assertions",
+  "rand 0.9.3",
+@@ -2431,7 +2431,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-attachment-store"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "pretty_assertions",
+  "serde",
+@@ -2441,7 +2441,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-aws-auth"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "aws-config",
+  "aws-credential-types",
+@@ -2467,7 +2467,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-backend-client"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "base64 0.22.1",
+@@ -2494,7 +2494,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-backend-openapi-models"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "serde",
+  "serde_json",
+@@ -2503,7 +2503,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-build-info"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-install-context",
+  "pretty_assertions",
+@@ -2516,7 +2516,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-bwrap"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "cc",
+  "libc",
+@@ -2525,7 +2525,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-chatgpt"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "base64 0.22.1",
+@@ -2553,7 +2553,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-cli"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "app_test_support",
+@@ -2658,7 +2658,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-client"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-http-client",
+  "eventsource-stream",
+@@ -2672,7 +2672,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-cloud-client"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "async-stream",
+@@ -2698,7 +2698,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-cloud-config"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "base64 0.22.1",
+  "chrono",
+@@ -2726,7 +2726,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-cloud-tasks"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "base64 0.22.1",
+@@ -2768,7 +2768,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-cloud-tasks-client"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "chrono",
+@@ -2783,7 +2783,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-cloud-tasks-mock-client"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "chrono",
+  "codex-cloud-tasks-client",
+@@ -2792,7 +2792,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-code-mode"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-code-mode-protocol",
+  "codex-http-client",
+@@ -2816,7 +2816,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-code-mode-host"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "axum",
+@@ -2847,7 +2847,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-code-mode-protocol"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-protocol",
+  "glob",
+@@ -2865,7 +2865,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-code-mode-runtime"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "base64 0.22.1",
+  "codex-code-mode-protocol",
+@@ -2887,11 +2887,11 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-collaboration-mode-templates"
+-version = "0.0.0"
++version = "0.169.1"
+ 
+ [[package]]
+ name = "codex-config"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "base64 0.22.1",
+@@ -2945,7 +2945,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-config-schema"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "clap",
+@@ -2954,7 +2954,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-connectors"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "arc-swap",
+@@ -2976,7 +2976,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-connectors-extension"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-connectors",
+  "codex-core-plugins",
+@@ -2990,7 +2990,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-context-fragments"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-protocol",
+  "codex-protocol-test-support",
+@@ -3001,7 +3001,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-core"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "arc-swap",
+@@ -3155,7 +3155,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-core-api"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-analytics",
+  "codex-app-server-protocol",
+@@ -3179,7 +3179,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-core-plugin-common"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-utils-absolute-path",
+  "semver",
+@@ -3190,7 +3190,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-core-plugins"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "base64 0.22.1",
+@@ -3251,7 +3251,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-diagnostics"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "libc",
+  "pretty_assertions",
+@@ -3259,7 +3259,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-direct-tool-timing"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-utils-critical-path",
+  "pretty_assertions",
+@@ -3270,7 +3270,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-exec"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "assert_cmd",
+@@ -3324,7 +3324,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-exec-server"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "arc-swap",
+@@ -3396,7 +3396,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-exec-server-cli"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "assert_matches",
+@@ -3440,7 +3440,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-exec-server-protocol"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "base64 0.22.1",
+  "codex-file-system",
+@@ -3458,7 +3458,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-exec-server-test-support"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "codex-exec-server",
+@@ -3473,7 +3473,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-execpolicy"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "caseless",
+@@ -3493,7 +3493,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-experimental-api-macros"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "proc-macro2",
+  "quote",
+@@ -3502,7 +3502,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-extension-api"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-api",
+  "codex-config",
+@@ -3525,7 +3525,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-extension-items"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-utils-absolute-path",
+  "pretty_assertions",
+@@ -3537,7 +3537,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-external-agent-migration"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "chrono",
+  "codex-analytics",
+@@ -3568,7 +3568,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-features"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-network-proxy",
+  "codex-protocol",
+@@ -3582,7 +3582,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-feedback"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "bytes",
+@@ -3610,7 +3610,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-file-search"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "clap",
+@@ -3626,7 +3626,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-file-system"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "bytes",
+  "codex-protocol",
+@@ -3640,7 +3640,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-file-watcher"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "notify",
+  "pretty_assertions",
+@@ -3651,7 +3651,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-git-attribution"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-backend-client",
+  "codex-extension-api",
+@@ -3667,7 +3667,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-git-utils"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "chrono",
+@@ -3695,7 +3695,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-goal-extension"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "chrono",
+@@ -3720,7 +3720,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-guardian-context"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-context-fragments",
+  "codex-history",
+@@ -3734,7 +3734,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-guardian-reviewer"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "codex-analytics",
+@@ -3771,7 +3771,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-guardian-v2"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "base64 0.22.1",
+@@ -3813,7 +3813,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-guardian-v3"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "chrono",
+@@ -3844,7 +3844,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-history"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "codex-protocol",
+@@ -3858,7 +3858,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-history-notes-extension"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-analytics",
+  "codex-client",
+@@ -3884,7 +3884,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-home"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-extension-api",
+  "codex-utils-absolute-path",
+@@ -3896,7 +3896,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-hooks"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "async-channel",
+@@ -3925,7 +3925,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-http-client"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "bytes",
+  "codex-utils-cargo-bin",
+@@ -3965,7 +3965,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-image-generation-extension"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "base64 0.22.1",
+  "codex-api",
+@@ -3997,7 +3997,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-install-context"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-utils-absolute-path",
+  "codex-utils-home-dir",
+@@ -4010,7 +4010,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-keyring-store"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "keyring",
+  "pretty_assertions",
+@@ -4021,7 +4021,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-linux-sandbox"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "clap",
+  "codex-core",
+@@ -4053,7 +4053,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-lmstudio"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-core",
+  "codex-http-client",
+@@ -4067,7 +4067,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-login"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "base64 0.22.1",
+@@ -4116,7 +4116,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-mcp"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "arc-swap",
+@@ -4167,7 +4167,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-mcp-extension"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "axum",
+@@ -4200,7 +4200,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-memories-extension"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-core",
+  "codex-extension-api",
+@@ -4222,7 +4222,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-memories-read"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-protocol",
+  "codex-shell-command",
+@@ -4232,7 +4232,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-memories-write"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "base64 0.22.1",
+@@ -4271,7 +4271,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-mermaid"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "insta",
+  "pretty_assertions",
+@@ -4280,7 +4280,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-message-board"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "base64 0.22.1",
+  "caseless",
+@@ -4305,7 +4305,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-message-board-mcp"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "axum",
+@@ -4333,7 +4333,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-message-history"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-config",
+  "memchr",
+@@ -4347,7 +4347,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-model-provider"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "base64 0.22.1",
+@@ -4387,7 +4387,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-model-provider-info"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-client",
+  "codex-http-client",
+@@ -4405,7 +4405,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-models-manager"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "chrono",
+  "codex-http-client",
+@@ -4424,7 +4424,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-multi-env-copy-file"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "codex-config",
+@@ -4450,7 +4450,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-mxc-sandbox"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "codex-network-proxy",
+@@ -4471,7 +4471,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-network-proxy"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "aws-credential-types",
+@@ -4522,7 +4522,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-ollama"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "assert_matches",
+  "async-stream",
+@@ -4542,7 +4542,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-otel"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "bytes",
+  "chrono",
+@@ -4580,7 +4580,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-otel-trace-websocket"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "axum",
+@@ -4591,7 +4591,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-plugin"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-config",
+  "codex-core-plugin-common",
+@@ -4606,7 +4606,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-plugin-host"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-utils-cargo-bin",
+  "codex-utils-process",
+@@ -4623,7 +4623,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-process-hardening"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "libc",
+  "pretty_assertions",
+@@ -4631,7 +4631,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-prompts"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "codex-collaboration-mode-templates",
+@@ -4649,7 +4649,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-protocol"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "chardetng",
+@@ -4695,7 +4695,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-protocol-test-support"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-protocol",
+  "uuid",
+@@ -4703,7 +4703,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-queue-extension"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "codex-core",
+@@ -4724,7 +4724,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-realtime-webrtc"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "codex-build-info",
+@@ -4743,7 +4743,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-response-debug-context"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "base64 0.22.1",
+  "codex-api",
+@@ -4754,7 +4754,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-responses-api-proxy"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "bytes",
+@@ -4778,7 +4778,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-rmcp-client"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "axum",
+@@ -4830,7 +4830,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-rollout"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "chrono",
+@@ -4863,7 +4863,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-rollout-trace"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "codex-code-mode",
+@@ -4880,7 +4880,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-runtime-agent-instance"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "base64 0.22.1",
+  "bytes",
+@@ -4909,7 +4909,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-sandboxing"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "codex-mxc-sandbox",
+@@ -4937,7 +4937,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-secrets"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "age",
+  "anyhow",
+@@ -4958,7 +4958,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-shell-command"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "base64 0.22.1",
+@@ -4981,7 +4981,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-skills"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-protocol",
+  "codex-shell-command",
+@@ -4998,7 +4998,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-skills-extension"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "assert_matches",
+  "blake3",
+@@ -5038,7 +5038,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-state"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "chrono",
+@@ -5067,7 +5067,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-stdio-to-uds"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "codex-uds",
+@@ -5079,7 +5079,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-tcp-tunnel"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "base64 0.22.1",
+@@ -5101,7 +5101,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-terminal-detection"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "pretty_assertions",
+  "tracing",
+@@ -5109,7 +5109,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-test-binary-support"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-arg0",
+  "tempfile",
+@@ -5117,7 +5117,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-thread-manager-sample"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "clap",
+@@ -5128,7 +5128,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-thread-store"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "caseless",
+  "chrono",
+@@ -5161,7 +5161,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-tools"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "bitflags 2.13.1",
+  "codex-attachment-store",
+@@ -5187,7 +5187,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-tui"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "app_test_support",
+@@ -5319,7 +5319,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-uds"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "async-io",
+  "libc",
+@@ -5333,7 +5333,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-user-verification"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "base64 0.22.1",
+  "block2",
+@@ -5354,7 +5354,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-utils-absolute-path"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "dirs",
+  "dunce",
+@@ -5368,14 +5368,14 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-utils-approval-presets"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-protocol",
+ ]
+ 
+ [[package]]
+ name = "codex-utils-audio"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "base64 0.22.1",
+  "codex-protocol",
+@@ -5389,7 +5389,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-utils-cache"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "lru",
+  "sha1 0.10.6",
+@@ -5398,7 +5398,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-utils-cargo-bin"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "assert_cmd",
+  "runfiles",
+@@ -5407,7 +5407,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-utils-cli"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "clap",
+  "codex-protocol",
+@@ -5419,22 +5419,22 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-utils-critical-path"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "pretty_assertions",
+ ]
+ 
+ [[package]]
+ name = "codex-utils-elapsed"
+-version = "0.0.0"
++version = "0.169.1"
+ 
+ [[package]]
+ name = "codex-utils-fuzzy-match"
+-version = "0.0.0"
++version = "0.169.1"
+ 
+ [[package]]
+ name = "codex-utils-git-discovery"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-git-utils",
+  "codex-utils-absolute-path",
+@@ -5447,14 +5447,14 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-utils-head-tail-buffer"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "pretty_assertions",
+ ]
+ 
+ [[package]]
+ name = "codex-utils-home-dir"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-utils-absolute-path",
+  "dirs",
+@@ -5464,7 +5464,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-utils-image"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "base64 0.22.1",
+  "codex-utils-cache",
+@@ -5478,7 +5478,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-utils-json-to-toml"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "pretty_assertions",
+  "serde_json",
+@@ -5487,7 +5487,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-utils-model-facing-id"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "blake3",
+  "pretty_assertions",
+@@ -5500,7 +5500,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-utils-oss"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-core",
+  "codex-lmstudio",
+@@ -5510,7 +5510,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-utils-output-truncation"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-protocol",
+  "codex-utils-string",
+@@ -5520,7 +5520,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-utils-path"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-utils-absolute-path",
+  "dunce",
+@@ -5531,7 +5531,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-utils-path-uri"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "base64 0.22.1",
+  "codex-utils-absolute-path",
+@@ -5547,7 +5547,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-utils-plugins"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-exec-server",
+  "codex-exec-server-protocol",
+@@ -5561,7 +5561,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-utils-process"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "pretty_assertions",
+  "tokio",
+@@ -5569,7 +5569,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-utils-pty"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "codex-utils-cargo-bin",
+@@ -5588,7 +5588,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-utils-readiness"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "assert_matches",
+  "thiserror 2.0.18",
+@@ -5598,7 +5598,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-utils-redacted-string"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "schemars 0.8.22",
+  "serde",
+@@ -5606,14 +5606,14 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-utils-rustls-provider"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "rustls",
+ ]
+ 
+ [[package]]
+ name = "codex-utils-sandbox-summary"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-protocol",
+  "codex-utils-absolute-path",
+@@ -5623,7 +5623,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-utils-sleep-inhibitor"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "core-foundation 0.9.4",
+  "libc",
+@@ -5633,14 +5633,14 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-utils-stream-parser"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "pretty_assertions",
+ ]
+ 
+ [[package]]
+ name = "codex-utils-string"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "pretty_assertions",
+  "regex-lite",
+@@ -5650,14 +5650,14 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-utils-template"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "pretty_assertions",
+ ]
+ 
+ [[package]]
+ name = "codex-v8-poc"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "pretty_assertions",
+  "v8",
+@@ -5665,7 +5665,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-voice-host"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "codex-install-context",
+@@ -5692,7 +5692,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-web-search-extension"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-api",
+  "codex-core",
+@@ -5716,7 +5716,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-websocket-auth"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "base64 0.22.1",
+@@ -5735,7 +5735,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-websocket-client"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-http-client",
+  "codex-utils-rustls-provider",
+@@ -5751,7 +5751,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-windows-sandbox"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "base64 0.22.1",
+@@ -5782,7 +5782,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-windows-sandbox-service"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "codex-cloud-config",
+@@ -5800,14 +5800,14 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-windows-sandbox-test-support"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "dirs",
+ ]
+ 
+ [[package]]
+ name = "codex-workload-identity"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "codex-http-client",
+  "pretty_assertions",
+@@ -5822,7 +5822,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "codex-worktree"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "codex-git-utils",
+@@ -6075,7 +6075,7 @@ dependencies = [
+ 
+ [[package]]
+ name = "core_test_support"
+-version = "0.0.0"
++version = "0.169.1"
+ dependencies = [
+  "anyhow",
+  "assert_cmd",
+diff --git a/codex-rs/tui/src/history_cell/assistant_images.rs b/codex-rs/tui/src/history_cell/assistant_images.rs
+new file mode 100644
+index 0000000..0c960f8
+--- /dev/null
++++ b/codex-rs/tui/src/history_cell/assistant_images.rs
+@@ -0,0 +1,104 @@
++//! Completed assistant replies preview linked local raster artifacts below their text.
++//! Markdown parsing excludes code examples. Remote URLs never trigger network requests.
++
++use codex_utils_absolute_path::AbsolutePathBuf;
++use pulldown_cmark::Event;
++use pulldown_cmark::Parser;
++use pulldown_cmark::Tag;
++use std::path::Path;
++use std::path::PathBuf;
++
++pub(super) fn local_paths(markdown: &str, cwd: &Path) -> Vec<AbsolutePathBuf> {
++    let mut paths = Vec::new();
++    for event in Parser::new(markdown) {
++        let dest_url = match event {
++            Event::Start(Tag::Link { dest_url, .. } | Tag::Image { dest_url, .. }) => dest_url,
++            Event::Code(path) => path,
++            _ => continue,
++        };
++        let destination = dest_url.as_ref();
++        if destination.len() > 8192 || destination.chars().any(char::is_control) {
++            continue;
++        }
++        if ["//", "\\\\", "~"]
++            .iter()
++            .any(|prefix| destination.starts_with(prefix))
++        {
++            continue;
++        }
++        let raw_path = PathBuf::from(destination);
++        let candidate = if raw_path.is_absolute() {
++            raw_path
++        } else if let Ok(url) = url::Url::parse(destination) {
++            if url.scheme() != "file"
++                || url.host().is_some()
++                || url.query().is_some()
++                || url.fragment().is_some()
++            {
++                continue;
++            }
++            let Ok(path) = url.to_file_path() else {
++                continue;
++            };
++            path
++        } else {
++            let path = PathBuf::from(destination);
++            // Do not contact network shares or guess a shell/home expansion.
++            if path.is_absolute() {
++                path
++            } else {
++                cwd.join(path)
++            }
++        };
++        if crate::terminal_hyperlinks::TerminalHyperlink::viewed_image(0..0, &candidate).is_none() {
++            continue;
++        }
++        let Ok(path) = candidate
++            .canonicalize()
++            .and_then(|path| AbsolutePathBuf::try_from(path).map_err(std::io::Error::other))
++        else {
++            continue;
++        };
++        if !paths.contains(&path) {
++            paths.push(path);
++        }
++        if paths.len() == 8 {
++            break;
++        }
++    }
++    paths
++}
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++
++    #[test]
++    fn reply_links_resolve_in_message_cwd_and_skip_examples_remote_and_invalid_files() {
++        let dir = tempfile::tempdir().unwrap();
++        let first = dir.path().join("first #1.png");
++        let second = dir.path().join("second.png");
++        image::RgbaImage::new(4, 2).save(&first).unwrap();
++        image::RgbaImage::new(2, 4).save(&second).unwrap();
++        std::fs::write(dir.path().join("notes.txt"), "text").unwrap();
++        let markdown = format!(
++            "![first](<first #1.png>) [duplicate]({}) [second](second.png)\n\
++             `[example](second.png)`\n```md\n![example](second.png)\n```\n\
++             [remote](https://example.com/image.png) [missing](missing.png) [notes](notes.txt)",
++            url::Url::from_file_path(&first).unwrap()
++        );
++        let paths = local_paths(&markdown, dir.path());
++        assert_eq!(paths.len(), 2);
++        assert_eq!(paths[0].as_path(), first.canonicalize().unwrap());
++        assert_eq!(paths[1].as_path(), second.canonicalize().unwrap());
++        assert!(
++            local_paths(
++                "`![example](second.png)`\n```md\n[x](second.png)\n```",
++                dir.path()
++            )
++            .is_empty()
++        );
++        assert_eq!(local_paths("Output: `second.png`", dir.path()).len(), 1);
++        assert!(local_paths("```\nsecond.png\n```", dir.path()).is_empty());
++    }
++}
+diff --git a/codex-rs/tui/src/history_cell/messages.rs b/codex-rs/tui/src/history_cell/messages.rs
+index 84f5a86..5067342 100644
+--- a/codex-rs/tui/src/history_cell/messages.rs
++++ b/codex-rs/tui/src/history_cell/messages.rs
+@@ -13,6 +13,9 @@ use crate::wrapping::url_preserving_wrap_options;
+ use crate::wrapping::word_wrap_line_with_source;
+ use std::borrow::Cow;
+ 
++#[path = "assistant_images.rs"]
++mod assistant_images;
++
+ #[derive(Debug)]
+ pub(crate) struct UserHistoryCell {
+     pub message: String,
+@@ -584,6 +587,8 @@ impl HistoryCell for AgentMessageCell {
+ ///
+ /// Ordinary markdown caches its latest rich render. Visualization directives bypass that cache
+ /// because resolving their local file links depends on filesystem state that can change later.
++/// Completed replies also expose local raster links to the graphics transcript. Their previews
++/// reserve visual rows below the reply; copy/search continue to use the original Markdown.
+ #[derive(Debug)]
+ pub(crate) struct AgentMarkdownCell {
+     /// Identifies an interrupted reply that can still receive its authoritative completion.
+@@ -755,6 +760,10 @@ impl AgentMarkdownCell {
+ }
+ 
+ impl HistoryCell for AgentMarkdownCell {
++    fn image_paths(&self) -> Vec<AbsolutePathBuf> {
++        assistant_images::local_paths(&self.markdown_source, &self.cwd)
++    }
++
+     fn copy_source(&self) -> Option<&str> {
+         Some(self.copy_source.as_deref().unwrap_or(&self.markdown_source))
+     }
+diff --git a/codex-rs/tui/src/history_cell/mod.rs b/codex-rs/tui/src/history_cell/mod.rs
+index 566afd9..490237e 100644
+--- a/codex-rs/tui/src/history_cell/mod.rs
++++ b/codex-rs/tui/src/history_cell/mod.rs
+@@ -233,6 +233,11 @@ pub(crate) trait HistoryCell: std::fmt::Debug + Send + Sync + Any {
+         None
+     }
+ 
++    /// Local image artifacts associated with this completed entry, in display order.
++    fn image_paths(&self) -> Vec<AbsolutePathBuf> {
++        self.image_path().into_iter().collect()
++    }
++
+     /// Raw live presentation may omit transcript-only diagnostics without losing their source.
+     fn live_raw_lines(&self) -> Vec<Line<'static>> {
+         self.raw_lines()
+diff --git a/codex-rs/tui/src/transcript_image.rs b/codex-rs/tui/src/transcript_image.rs
+index 4a6d695..ccd33d3 100644
+--- a/codex-rs/tui/src/transcript_image.rs
++++ b/codex-rs/tui/src/transcript_image.rs
+@@ -96,7 +96,27 @@ impl TranscriptImage {
+     }
+ 
+     pub(crate) fn load(path: &Path, width: u16, protocol: ImageProtocol) -> Option<Self> {
+-        let columns = width.saturating_sub(2).min(48);
++        Self::load_bounded(path, width, protocol, 48, 6, (384, 160))
++    }
++
++    /// A completed reply gets a medium preview, leaving room for text and the composer.
++    pub(crate) fn load_reply(path: &Path, width: u16, protocol: ImageProtocol) -> Option<Self> {
++        let rows = crossterm::terminal::size()
++            .ok()
++            .map_or(10, |(_, rows)| rows / 3)
++            .clamp(3, 12);
++        Self::load_bounded(path, width, protocol, 80, u32::from(rows), (1024, 384))
++    }
++
++    fn load_bounded(
++        path: &Path,
++        width: u16,
++        protocol: ImageProtocol,
++        max_columns: u16,
++        max_rows: u32,
++        max_raster: (u32, u32),
++    ) -> Option<Self> {
++        let columns = width.saturating_sub(2).min(max_columns);
+         // Sixel paints physical pixels. Guessing could paint outside the reserved rows.
+         let (cell_width, cell_height) = match protocol {
+             ImageProtocol::Sixel => terminal_cell_size()?,
+@@ -106,12 +126,12 @@ impl TranscriptImage {
+         // work and worst-case output even with large terminal cells or high-entropy images.
+         let (max_width, max_height) = match protocol {
+             ImageProtocol::Sixel => (160, 80),
+-            ImageProtocol::Kitty | ImageProtocol::KittyLocalFile => (384, 160),
++            ImageProtocol::Kitty | ImageProtocol::KittyLocalFile => max_raster,
+         };
+         let pixels = Self::load_pixels(
+             path,
+             (u32::from(columns) * cell_width).min(max_width),
+-            (6 * cell_height).min(max_height),
++            (max_rows * cell_height).min(max_height),
+         )?;
+         Some(Self {
+             protocol,
+diff --git a/codex-rs/tui/src/transcript_image/composer.rs b/codex-rs/tui/src/transcript_image/composer.rs
+index ee30881..10d0c9d 100644
+--- a/codex-rs/tui/src/transcript_image/composer.rs
++++ b/codex-rs/tui/src/transcript_image/composer.rs
+@@ -21,6 +21,8 @@ use super::terminal_cell_size;
+ use crate::bottom_pane::LocalImageAttachment;
+ use crate::bottom_pane::TextArea;
+ use crate::pets::ImageProtocol;
++use crate::terminal_hyperlinks::TerminalHyperlink;
++use crate::terminal_hyperlinks::mark_hyperlink_cells;
+ 
+ // Six columns by three rows is square with typical 8 × 16 pixel cells.
+ const WIDTH: u16 = 6;
+@@ -36,6 +38,7 @@ pub(crate) struct ComposerImages {
+     protocol: ImageProtocol,
+     cell_size: (u32, u32),
+     background: (u8, u8, u8),
++    original_links: bool,
+     cache: RefCell<HashMap<TileKey, Option<Arc<TranscriptImage>>>>,
+     pub(crate) placements: RefCell<Vec<ImagePlacement>>,
+ }
+@@ -48,8 +51,12 @@ impl ComposerImages {
+         let background = crate::terminal_palette::default_bg()
+             .map(crate::style::user_message_bg_rgb)
+             .unwrap_or((48, 48, 48));
++        // Herdr reads the original only after a click. Keep the raster and draft unchanged.
++        // Unit fixtures opt in explicitly rather than inheriting the test runner's terminal.
++        let original_links = !cfg!(test) && std::env::var_os("HC_TERMINAL_ID").is_some();
+         if previous.as_ref().is_some_and(|old| {
+             (old.protocol, old.cell_size, old.background) == (protocol, cell_size, background)
++                && old.original_links == original_links
+         }) {
+             return previous;
+         }
+@@ -57,6 +64,7 @@ impl ComposerImages {
+             protocol,
+             cell_size,
+             background,
++            original_links,
+             cache: RefCell::default(),
+             placements: RefCell::default(),
+         })
+@@ -126,6 +134,18 @@ impl ComposerImages {
+                     first_row: 0,
+                     file: None,
+                 });
++                if self.original_links
++                    && self.protocol != ImageProtocol::Sixel
++                    && let Some(destination) = original_image_destination(path)
++                {
++                    for y in tile.top()..tile.bottom() {
++                        mark_hyperlink_cells(
++                            buf,
++                            Rect::new(tile.x, y, tile.width, 1),
++                            &destination,
++                        );
++                    }
++                }
+             } else {
+                 Paragraph::new(attachment.placeholder.as_str())
+                     .style(style)
+@@ -187,6 +207,76 @@ impl ComposerImages {
+     }
+ }
+ 
++/// Semantic metadata on the reserved image cells, never part of submitted draft text.
++fn original_image_destination(path: &Path) -> Option<String> {
++    let destination =
++        TerminalHyperlink::viewed_image(0..usize::from(WIDTH), path)?.terminal_destination()?;
++    Some(format!("{destination}#codex-image-original"))
++}
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++
++    #[test]
++    fn original_reference_stays_on_thumbnail_cells_and_out_of_draft() {
++        let directory = tempfile::tempdir().unwrap();
++        let path = directory.path().join("original #1.png");
++        RgbaImage::from_pixel(800, 400, Rgba([12, 34, 56, 255]))
++            .save(&path)
++            .unwrap();
++        let attachments = [LocalImageAttachment {
++            placeholder: "[Image #1]".into(),
++            path: path.clone(),
++        }];
++        let mut textarea = TextArea::new();
++        textarea.set_text_clearing_elements("[Image #1] inspect this screenshot");
++        let mut previews = ComposerImages::for_terminal(ImageProtocol::Kitty, None).unwrap();
++        previews.original_links = true;
++        let area = Rect::new(0, 0, 20, HEIGHT + 1);
++        let mut buffer = Buffer::empty(area);
++        previews.render(area, &mut buffer, &attachments, &textarea);
++        let destination = original_image_destination(&path).unwrap();
++        assert!(destination.contains("%23"));
++        assert!(destination.ends_with("#codex-image-original"));
++        for y in 0..HEIGHT {
++            for x in 0..WIDTH {
++                assert!(buffer[(x, y)].symbol().contains(&destination));
++            }
++        }
++        assert_eq!(buffer[(WIDTH, 0)].symbol(), " ");
++        assert_eq!(buffer[(0, HEIGHT)].symbol(), " ");
++        assert_eq!(textarea.text(), "[Image #1] inspect this screenshot");
++        let placements = previews.placements.borrow();
++        assert_eq!(placements.len(), 1);
++        assert!(placements[0].image.pixels.width() <= 384);
++        assert!(placements[0].image.pixels.height() <= 160);
++    }
++
++    #[test]
++    fn normal_terminals_and_non_images_do_not_get_original_references() {
++        let directory = tempfile::tempdir().unwrap();
++        let path = directory.path().join("image.png");
++        RgbaImage::from_pixel(16, 8, Rgba([1, 2, 3, 255]))
++            .save(&path)
++            .unwrap();
++        let attachments = [LocalImageAttachment {
++            placeholder: "[Image #1]".into(),
++            path,
++        }];
++        let mut previews = ComposerImages::for_terminal(ImageProtocol::Kitty, None).unwrap();
++        previews.original_links = false;
++        let area = Rect::new(0, 0, 20, HEIGHT + 1);
++        let mut buffer = Buffer::empty(area);
++        previews.render(area, &mut buffer, &attachments, &TextArea::new());
++        assert!(!buffer[(0, 0)].symbol().contains("\x1b]8"));
++        let text = directory.path().join("document.txt");
++        std::fs::write(&text, "not an image").unwrap();
++        assert!(original_image_destination(&text).is_none());
++        assert!(original_image_destination(&directory.path().join("missing.png")).is_none());
++    }
++}
++
+ fn visible_thumbnails(width: u16, count: usize) -> (usize, usize) {
+     let mut visible = ((usize::from(width) + 1) / usize::from(WIDTH + 1)).min(count);
+     while visible > 0 && visible < count {
+diff --git a/codex-rs/tui/src/transcript_view.rs b/codex-rs/tui/src/transcript_view.rs
+index 691387f..abca8b7 100644
+--- a/codex-rs/tui/src/transcript_view.rs
++++ b/codex-rs/tui/src/transcript_view.rs
+@@ -331,26 +331,29 @@ impl TranscriptView {
+             let entry_y = y;
+             y += rows.len() as u16;
+             let visible = &rows[0];
+-            let Some(image) = visible.layout.visible_image() else {
+-                continue;
+-            };
+-            let image_start = visible.layout.text_row_count();
+-            let skip = image_start.saturating_sub(visible.row);
+-            if skip >= rows.len() {
+-                continue;
++            let mut image_start = visible.layout.text_row_count();
++            for (image, _) in visible.layout.visible_images() {
++                let image_end = image_start + usize::from(image.rows);
++                let first = image_start.max(visible.row);
++                let end = image_end.min(visible.row + rows.len());
++                if first >= end {
++                    image_start = image_end;
++                    continue;
++                }
++                let area = Rect::new(
++                    self.area.x + self.area.width.saturating_sub(image.columns) / 2,
++                    entry_y + (first - visible.row) as u16,
++                    image.columns,
++                    (end - first) as u16,
++                );
++                placements.push(crate::transcript_image::ImagePlacement {
++                    image: Arc::clone(image),
++                    area,
++                    first_row: first - image_start,
++                    file: None,
++                });
++                image_start = image_end;
+             }
+-            let area = Rect::new(
+-                self.area.x + self.area.width.saturating_sub(image.columns) / 2,
+-                entry_y + skip as u16,
+-                image.columns,
+-                (rows.len() - skip) as u16,
+-            );
+-            placements.push(crate::transcript_image::ImagePlacement {
+-                image: Arc::clone(image),
+-                area,
+-                first_row: visible.row.saturating_sub(image_start),
+-                file: None,
+-            });
+         }
+         placements
+     }
+diff --git a/codex-rs/tui/src/transcript_view/layout.rs b/codex-rs/tui/src/transcript_view/layout.rs
+index 1edbd6e..b13ab7d 100644
+--- a/codex-rs/tui/src/transcript_view/layout.rs
++++ b/codex-rs/tui/src/transcript_view/layout.rs
+@@ -86,12 +86,34 @@ fn cell_content_layout(
+             width,
+         )
+     };
+-    if let Some(protocol) = presentation.image_protocol
+-        && let Some(path) = cell.image_path()
+-    {
+-        layout.image =
+-            crate::transcript_image::TranscriptImage::load(path.as_path(), width, protocol)
+-                .map(Arc::new);
++    if let Some(protocol) = presentation.image_protocol {
++        for path in cell.image_paths() {
++            let reply = cell.as_any().is::<crate::history_cell::AgentMarkdownCell>();
++            let load = if reply {
++                crate::transcript_image::TranscriptImage::load_reply
++            } else {
++                crate::transcript_image::TranscriptImage::load
++            };
++            let Some(image) = load(path.as_path(), width, protocol).map(Arc::new) else {
++                continue;
++            };
++            let destination = reply
++                .then(|| {
++                    crate::terminal_hyperlinks::TerminalHyperlink::viewed_image(
++                        0..0,
++                        path.as_path(),
++                    )
++                    .and_then(|link| link.terminal_destination())
++                    .map(|uri| format!("{uri}#codex-image-original"))
++                })
++                .flatten();
++            if layout.image.is_none() {
++                layout.image = Some(image);
++                layout.image_destination = destination;
++            } else {
++                layout.additional_images.push((image, destination));
++            }
++        }
+     }
+     layout
+ }
+@@ -114,6 +136,7 @@ struct RenderState {
+     background: Option<(u8, u8, u8)>,
+     color_level: crate::terminal_palette::StdoutColorLevel,
+     cell_size: Option<(u32, u32)>,
++    terminal_rows: Option<u16>,
+ }
+ 
+ struct CachedLayout {
+@@ -322,6 +345,7 @@ impl LayoutCache {
+             background: crate::terminal_palette::default_bg(),
+             color_level: crate::terminal_palette::stdout_color_level(),
+             cell_size: crate::transcript_image::terminal_cell_size(),
++            terminal_rows: crossterm::terminal::size().ok().map(|(_, rows)| rows),
+         };
+         if self.render_state.as_ref() != Some(&state) {
+             self.entries.clear();
+@@ -423,6 +447,12 @@ impl LayoutCache {
+                     .image
+                     .as_ref()
+                     .map_or(0, |image| image.pixels.len())
++                + entry
++                    .layout
++                    .additional_images
++                    .iter()
++                    .map(|(image, _)| image.pixels.len())
++                    .sum::<usize>()
+         };
+         let mut bytes = self.entries.iter().map(retained_bytes).sum::<usize>();
+         // Retain a single oversized entry rather than repeatedly laying it out while visible.
+diff --git a/codex-rs/tui/src/transcript_view/layout_tests.rs b/codex-rs/tui/src/transcript_view/layout_tests.rs
+index 6900994..5aa240d 100644
+--- a/codex-rs/tui/src/transcript_view/layout_tests.rs
++++ b/codex-rs/tui/src/transcript_view/layout_tests.rs
+@@ -6,6 +6,64 @@ use ratatui::text::Line;
+ use std::sync::atomic::AtomicUsize;
+ use std::sync::atomic::Ordering;
+ 
++#[test]
++fn assistant_reply_images_render_without_tool_expansion_and_clip_independently() {
++    let dir = tempfile::tempdir().unwrap();
++    for name in ["one.png", "two.png"] {
++        image::RgbaImage::from_pixel(400, 160, image::Rgba([12, 34, 56, 255]))
++            .save(dir.path().join(name))
++            .unwrap();
++    }
++    let markdown = "Here are the results: [one](one.png) ![two](two.png)";
++    let cell = Arc::new(crate::history_cell::AgentMarkdownCell::new(
++        markdown.into(),
++        dir.path(),
++    ));
++    assert_eq!(cell.copy_source(), Some(markdown));
++    let cells: Vec<Arc<dyn HistoryCell>> = vec![cell];
++    let area = Rect::new(3, 2, 80, 30);
++    let mut view = TranscriptView::default();
++    let mut buffer = Buffer::empty(area);
++    view.render(area, &mut buffer, &cells);
++    let text = view.layout(&cells, 0).unwrap().text().to_owned();
++    assert!(view.image_placements().is_empty());
++    view.image_protocol = Some(crate::pets::ImageProtocol::Kitty);
++    view.render(area, &mut buffer, &cells);
++    let layout = view.layout(&cells, 0).unwrap();
++    assert_eq!(layout.text(), text);
++    assert_eq!(layout.additional_images.len(), 1);
++    let placements = view.image_placements();
++    assert_eq!(placements.len(), 2);
++    assert!(placements[0].area.bottom() <= placements[1].area.top());
++    for placement in &placements {
++        assert!(placement.area.bottom() <= area.bottom());
++        assert!(
++            buffer[(placement.area.x, placement.area.y)]
++                .symbol()
++                .contains("#codex-image-original")
++        );
++    }
++    let image_rows = placements
++        .iter()
++        .map(|p| usize::from(p.area.height))
++        .sum::<usize>();
++    assert_eq!(layout.row_count(), layout.text_row_count() + image_rows);
++    let narrow = layout.rewrap(2);
++    assert!(narrow.visible_image().is_none());
++    assert_eq!(narrow.rewrap(area.width).row_count(), layout.row_count());
++    let short = Rect::new(7, 5, 80, 3);
++    view.jump_to_latest();
++    view.render(short, &mut Buffer::empty(short), &cells);
++    assert!(!view.image_placements().is_empty());
++    assert!(view.image_placements().iter().all(|p| p.area.y >= short.y
++        && p.area.bottom() <= short.bottom()
++        && p.first_row < usize::from(p.image.rows)
++        && usize::from(p.area.height) + p.first_row <= usize::from(p.image.rows)));
++    view.set_presentation(false, HistoryRenderMode::Raw);
++    view.render(area, &mut Buffer::empty(area), &cells);
++    assert!(view.image_placements().is_empty());
++}
++
+ #[derive(Debug, Default)]
+ struct Cell {
+     renders: AtomicUsize,
+diff --git a/codex-rs/tui/src/transcript_view/text.rs b/codex-rs/tui/src/transcript_view/text.rs
+index 93c50c8..9d76948 100644
+--- a/codex-rs/tui/src/transcript_view/text.rs
++++ b/codex-rs/tui/src/transcript_view/text.rs
+@@ -43,6 +43,11 @@ use ratatui::text::Line;
+ /// One cell's logical text and its width-dependent display rows.
+ pub(crate) struct TextLayout {
+     pub(super) image: Option<std::sync::Arc<crate::transcript_image::TranscriptImage>>,
++    pub(super) image_destination: Option<String>,
++    pub(super) additional_images: Vec<(
++        std::sync::Arc<crate::transcript_image::TranscriptImage>,
++        Option<String>,
++    )>,
+     logical: Vec<LogicalLine>,
+     text: String,
+     rows: Vec<TextRow>,
+@@ -169,6 +174,8 @@ impl TextLayout {
+             layout = layout.with_control(control.label.clone(), control.anchor);
+         }
+         layout.image = self.image.clone();
++        layout.image_destination = self.image_destination.clone();
++        layout.additional_images = self.additional_images.clone();
+         if self.leading_blank_hidden {
+             layout = layout.without_leading_blank_row();
+         }
+@@ -357,8 +364,9 @@ impl TextLayout {
+         // Images occupy visual space, but have no searchable or selectable text rows.
+         self.text_row_count()
+             + self
+-                .visible_image()
+-                .map_or(0, |image| usize::from(image.rows))
++                .visible_images()
++                .map(|(image, _)| usize::from(image.rows))
++                .sum::<usize>()
+     }
+ 
+     pub(super) fn text_row_count(&self) -> usize {
+@@ -368,12 +376,31 @@ impl TextLayout {
+     pub(super) fn visible_image(
+         &self,
+     ) -> Option<&std::sync::Arc<crate::transcript_image::TranscriptImage>> {
+-        self.image.as_ref().filter(|image| {
+-            image.columns + 2 <= self.width
+-                && (image.protocol != crate::pets::ImageProtocol::Sixel
+-                    || crate::transcript_image::terminal_cell_size()
+-                        == Some((image.cell_width, image.cell_height)))
+-        })
++        self.visible_images().next().map(|(image, _)| image)
++    }
++
++    pub(super) fn visible_images(
++        &self,
++    ) -> impl Iterator<
++        Item = (
++            &std::sync::Arc<crate::transcript_image::TranscriptImage>,
++            Option<&str>,
++        ),
++    > {
++        self.image
++            .iter()
++            .map(|image| (image, self.image_destination.as_deref()))
++            .chain(
++                self.additional_images
++                    .iter()
++                    .map(|(image, destination)| (image, destination.as_deref())),
++            )
++            .filter(|(image, _)| {
++                image.columns + 2 <= self.width
++                    && (image.protocol != crate::pets::ImageProtocol::Sixel
++                        || crate::transcript_image::terminal_cell_size()
++                            == Some((image.cell_width, image.cell_height)))
++            })
+     }
+ 
+     /// A control label is visible activity even when its selectable source is empty.
+@@ -407,6 +434,27 @@ impl TextLayout {
+             HyperlinkParagraph::new(std::slice::from_ref(&row.line), row.line.line.style)
+                 .render(row_area, buf);
+         }
++        let mut image_row = self.text_row_count();
++        for (image, destination) in self.visible_images() {
++            let bottom = image_row + usize::from(image.rows);
++            if let Some(destination) = destination {
++                for row in
++                    image_row.max(start_row)..bottom.min(start_row + usize::from(area.height))
++                {
++                    crate::terminal_hyperlinks::mark_hyperlink_cells(
++                        buf,
++                        Rect::new(
++                            area.x + area.width.saturating_sub(image.columns) / 2,
++                            area.y + (row - start_row) as u16,
++                            image.columns,
++                            1,
++                        ),
++                        destination,
++                    );
++                }
++            }
++            image_row = bottom;
++        }
+     }
+ 
+     /// Resolve a cell coordinate to a grapheme boundary, clamping padding to the row's text.
+@@ -616,6 +664,8 @@ impl TextLayout {
+         }
+         Self {
+             image: None,
++            image_destination: None,
++            additional_images: Vec::new(),
+             logical,
+             text,
+             rows,

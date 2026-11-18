@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.venv/
+dist/
+build/
+target/
+*.exe
+*.dll
+*.zip
+*.tar.gz
+.DS_Store
+Thumbs.db

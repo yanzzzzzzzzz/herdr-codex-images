@@ -1,0 +1,764 @@
+diff --git a/defaults/AGENTS.md b/defaults/AGENTS.md
+index b8cb4c2..af27b2b 100644
+--- a/defaults/AGENTS.md
++++ b/defaults/AGENTS.md
+@@ -656,6 +656,15 @@ The main ones:
+   releasing stops it. Programs that track the mouse still get their mouse events
+   (hold Shift to select text instead). A drag stays with the terminal where it
+   started, including its release outside the pane; other panes don't receive it.
++  Click a terminal image to inspect its transmitted pixels in a separate, resizable
++  preview window; Escape closes the preview without typing into the terminal. Shift-click
++  keeps the terminal's normal selection/program mouse behavior over images.
++  Preview windows close with their parent window.
++  Fit (0), 100% (1), + and - control zoom; scroll or drag to pan.
++  Compatible Codex builds attach an explicit original-file reference to draft
++  thumbnails. Clicking loads that original from the terminal's machine on demand;
++  the preview reports its dimensions or keeps the transmitted image if unavailable.
++  Other terminal images retain the resolution the program transmitted.
+   Terminals display Kitty graphics, including Unicode placeholder images used by
+   programs such as yazi; partial images and scrolling follow the placeholder cells.
+ - Agents: `agent.next`, `agent.prev`, `agent.focus {terminal}`.
+diff --git a/src/SKILL.md b/src/SKILL.md
+index 9e940ff..bdfad7e 100644
+--- a/src/SKILL.md
++++ b/src/SKILL.md
+@@ -20,6 +20,12 @@ prints the built-in command list even without an open window. Do not launch bare
+ signal or restart the person's app or core. A window closing does not kill
+ its terminals.
+ 
++Click a terminal image to open a separate preview. Escape closes it; 0 fits,
++1 shows 100%, and + / - zoom. Scroll or drag to pan. Compatible Codex draft
++thumbnails load their referenced original from the terminal's machine on click;
++otherwise the preview uses the transmitted pixels. No preview keys enter the
++terminal, and closing the parent window closes its previews.
++
+ `app.check_updates` checks for newer releases. Settings reports "Up to date"
+ only after a successful check; on failure, check the connection and retry.
+ Package-managed cores are checked but updated through their package manager.
+diff --git a/src/links.rs b/src/links.rs
+index 65999da..eb5c64b 100644
+--- a/src/links.rs
++++ b/src/links.rs
+@@ -116,7 +116,7 @@ pub fn resolve(link: &str, cwd: Option<&Path>) -> Option<Target> {
+ }
+ 
+ /// The path a `file:` URL names on this computer, percent-decoded.
+-fn file_url_path(link: &str) -> Option<PathBuf> {
++pub(crate) fn file_url_path(link: &str) -> Option<PathBuf> {
+     let rest = link.strip_prefix("file://")?;
+     let rest = rest.strip_prefix("localhost").unwrap_or(rest);
+     // Another host's file, or no path.
+diff --git a/src/terminal.rs b/src/terminal.rs
+index d480e5d..9157220 100644
+--- a/src/terminal.rs
++++ b/src/terminal.rs
+@@ -2,6 +2,7 @@
+ //! with GPUI, keys and mouse encoded by libghostty-vt and sent back.
+ 
+ mod drag_paths;
++mod image_preview;
+ 
+ use crate::hc::{Core, Stream};
+ use crate::vt::{self, CursorShape, Rgb, Select, Vt};
+@@ -126,6 +127,8 @@ struct Grid {
+     buttons_down: Vec<MouseButton>,
+     /// Kitty images uploaded for drawing, by (image, generation, source rect).
+     images: HashMap<(u32, u64, [u32; 4]), Arc<RenderImage>>,
++    /// Visible image rectangles from the last paint, in paint order.
++    image_hits: Vec<(Bounds<Pixels>, u32, u64)>,
+     /// Where the pointer is over the pane.
+     hover: Option<Point<Pixels>>,
+     /// The link under the pointer to underline: (row, first column, last column).
+@@ -325,6 +328,7 @@ impl TerminalView {
+                 origin: Point::default(),
+                 buttons_down: Vec::new(),
+                 images: HashMap::new(),
++                image_hits: Vec::new(),
+                 hover: None,
+                 link_spans: Vec::new(),
+                 marked: None,
+@@ -1138,6 +1142,15 @@ impl TerminalView {
+         Some((target, hit.spans))
+     }
+ 
++    fn original_image_at(&self, pos: Point<Pixels>) -> Option<image_preview::OriginalSource> {
++        let g = self.grid.borrow();
++        let (x, y) = local(&g, pos);
++        let (col, row) = ((x / f32::from(g.cell.width)) as u16, (y / f32::from(g.cell.height)) as u16);
++        let hit = g.vt.link_at(col, row, |_, _, _| None)?;
++        let machine = self.address.split_once('/').map(|(machine, _)| machine.to_owned());
++        image_preview::OriginalSource::from_uri(&hit.target, machine)
++    }
++
+     fn start_selection(&mut self, pos: Point<Pixels>, cx: &mut Context<Self>) {
+         self.selecting = true;
+         self.selection_pointer = pos;
+@@ -2080,6 +2093,7 @@ fn paint_grid(bounds: Bounds<Pixels>, grid: &Rc<RefCell<Grid>>, focused: bool, w
+     let placements = g.vt.placements();
+     let mut images: Vec<(bool, Bounds<Pixels>, Arc<RenderImage>)> = Vec::new();
+     let mut keep = std::collections::HashSet::new();
++    g.image_hits.clear();
+     for p in &placements {
+         let key = (p.image, p.generation, p.source);
+         keep.insert(key);
+@@ -2099,7 +2113,10 @@ fn paint_grid(bounds: Bounds<Pixels>, grid: &Rc<RefCell<Grid>>, focused: bool, w
+             let pos = origin + point(px(x), px(y));
+             // Placeholder runs contain no text and must cover explicit cell backgrounds.
+             let below = p.z < 0 && p.cell_pixels.is_none();
+-            images.push((below, Bounds::new(pos, size(px(width), px(height))), img.clone()));
++            let img = img.clone();
++            let image_bounds = Bounds::new(pos, size(px(width), px(height)));
++            g.image_hits.push((image_bounds.intersect(&bounds), p.image, p.generation));
++            images.push((below, image_bounds, img));
+         }
+     }
+     g.images.retain(|k, _| keep.contains(k));
+@@ -2419,6 +2436,7 @@ impl Render for TerminalView {
+         }
+         let cell = cell_size(window);
+         let hover = self.grid.borrow().hover;
++        let image_hover = hover.is_some_and(|at| self.grid.borrow().image_hits.iter().any(|(bounds, _, _)| bounds.contains(&at)));
+         let found = hover.filter(|_| link_mods(&window.modifiers())).and_then(|pos| self.link_at(pos));
+         let (link, spans) = found.unzip();
+         self.link = link;
+@@ -2475,11 +2493,11 @@ impl Render for TerminalView {
+             .on_drop(cx.listener(|this, paths: &ExternalPaths, _, cx| this.dropped(paths.paths().to_vec(), cx)))
+             .on_drop(cx.listener(Self::dropped_from_mod))
+             .on_scroll_wheel(cx.listener(Self::scroll))
+-            .when(self.link.is_some(), |d| d.cursor_pointer())
++            .when(self.link.is_some() || image_hover, |d| d.cursor_pointer())
+             .on_hover(cx.listener(|this, hovered: &bool, _, cx| {
+                 if !hovered {
+                     this.grid.borrow_mut().hover = None;
+-                    if this.link.is_some() {
++                    if this.link.is_some() || !this.grid.borrow().image_hits.is_empty() {
+                         cx.notify();
+                     }
+                 }
+@@ -2491,6 +2509,36 @@ impl Render for TerminalView {
+                     g.core.resize(ch, g.vt.cols, g.vt.rows);
+                 }
+                 drop(g);
++                // Shift keeps selection and program mouse behavior available over graphics.
++                if !ev.modifiers.shift && !link_mods(&ev.modifiers)
++                    && !this.grid.borrow().track.is_some_and(|track| track.contains(&ev.position))
++                {
++                    let image = {
++                        let g = this.grid.borrow();
++                        g.image_hits.iter().rev()
++                            .find(|(bounds, _, _)| bounds.contains(&ev.position))
++                            .map(|(_, id, generation)| (*id, *generation))
++                    };
++                    if let Some((id, generation)) = image {
++                        let pixels = {
++                            let g = this.grid.borrow();
++                            // Output may have replaced the image since the last paint.
++                            let current = g.vt.placements().iter().any(|p| p.image == id && p.generation == generation);
++                            current.then(|| g.vt.image_bgra(id, [0, 0, u32::MAX, u32::MAX])).flatten()
++                        };
++                        if let Some((w, h, bgra)) = pixels
++                            && let Some(buffer) = image::RgbaImage::from_raw(w, h, bgra)
++                        {
++                            let image = Arc::new(RenderImage::new(smallvec::smallvec![image::Frame::new(buffer)]));
++                            let original = this.original_image_at(ev.position);
++                            if let Err(error) = image_preview::open_original(image, original, window, cx) {
++                                cx.emit(TerminalEvent::Notice { title: "Cannot preview image".into(), body: error.to_string() });
++                            }
++                            cx.stop_propagation();
++                            return;
++                        }
++                    }
++                }
+                 if link_mods(&ev.modifiers)
+                     && let Some((target, _)) = this.link_at(ev.position)
+                 {
+@@ -2550,8 +2598,14 @@ impl Render for TerminalView {
+                 }
+             }))
+             .on_mouse_move(cx.listener(|this, ev: &MouseMoveEvent, _, cx| {
+-                this.grid.borrow_mut().hover = Some(ev.position);
+-                if link_mods(&ev.modifiers) || this.link.is_some() {
++                let image_hover_changed = {
++                    let mut grid = this.grid.borrow_mut();
++                    let over_image = |at| grid.image_hits.iter().any(|(bounds, _, _)| bounds.contains(&at));
++                    let changed = grid.hover.is_some_and(over_image) != over_image(ev.position);
++                    grid.hover = Some(ev.position);
++                    changed
++                };
++                if link_mods(&ev.modifiers) || this.link.is_some() || image_hover_changed {
+                     cx.notify();
+                 }
+                 if !this.selecting && ev.pressed_button.is_none() {
+diff --git a/src/terminal/image_preview.rs b/src/terminal/image_preview.rs
+new file mode 100644
+index 0000000..b6efe28
+--- /dev/null
++++ b/src/terminal/image_preview.rs
+@@ -0,0 +1,354 @@
++//! Inspect an image drawn by a terminal, without sending input to its program.
++
++use gpui::*;
++use std::sync::Arc;
++use std::sync::atomic::{AtomicBool, Ordering};
++
++mod original;
++pub(super) use original::OriginalSource;
++
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++enum Detail { Image, Loading, Original, Unavailable }
++
++#[derive(Clone, Copy)]
++enum Zoom { Fit, Actual, In, Out }
++
++struct ImagePreview {
++    image: Arc<RenderImage>,
++    focus: FocusHandle,
++    detail: Detail,
++    zoom: Option<f32>,
++    scroll: ScrollHandle,
++    pan_start: Option<(Point<Pixels>, Point<Pixels>)>,
++    cancelled: Arc<AtomicBool>,
++    _loading: Option<Task<()>>,
++    _parent_close: Subscription,
++}
++
++#[cfg(test)]
++pub(super) fn open(image: Arc<RenderImage>, parent: &Window, cx: &mut App) -> anyhow::Result<()> {
++    open_original(image, None, parent, cx)
++}
++
++pub(super) fn open_original(image: Arc<RenderImage>, original: Option<OriginalSource>, parent: &Window, cx: &mut App) -> anyhow::Result<()> {
++    let parent_id = parent.window_handle().window_id();
++    let display = parent.display(cx);
++    let available = display.as_ref().map_or(parent.viewport_size(), |display| display.bounds().size);
++    let preview_size = size((available.width * 0.9).min(px(1000.0)), (available.height * 0.9).min(px(760.0)));
++    let display = display.map(|display| display.id());
++    let bounds = Bounds::centered(display, preview_size, cx);
++    cx.open_window(
++        WindowOptions {
++            window_bounds: Some(WindowBounds::Windowed(bounds)),
++            display_id: display,
++            titlebar: Some(TitlebarOptions { title: Some("Image preview — Esc to close".into()), ..Default::default() }),
++            ..Default::default()
++        },
++        |window, cx| cx.new(|cx| {
++            let focus = cx.focus_handle();
++            focus.focus(window, cx);
++            let preview = window.window_handle();
++            let parent_close = cx.on_window_closed(move |cx, closed| {
++                if closed == parent_id {
++                    let _ = preview.update(cx, |_, window, _| window.remove_window());
++                }
++            });
++            let mut preview = ImagePreview { image, focus, detail: Detail::Image, zoom: None,
++                scroll: ScrollHandle::new(), pan_start: None, cancelled: Arc::new(AtomicBool::new(false)),
++                _loading: None, _parent_close: parent_close };
++            if let Some(original) = original { preview.load_original(original, cx); }
++            preview
++        }),
++    )?;
++    Ok(())
++}
++
++impl Drop for ImagePreview {
++    fn drop(&mut self) { self.cancelled.store(true, Ordering::Relaxed); }
++}
++
++impl ImagePreview {
++    fn load_original(&mut self, original: OriginalSource, cx: &mut Context<Self>) {
++        self.detail = Detail::Loading;
++        let cancelled = self.cancelled.clone();
++        let work = cx.background_executor().spawn(async move { original.load(&cancelled) });
++        self._loading = Some(cx.spawn(async move |this, cx| {
++            let result = work.await;
++            let _ = this.update(cx, |this, cx| {
++                match result {
++                    Ok((width, height, pixels)) => {
++                        if let Some(buffer) = image::RgbaImage::from_raw(width, height, pixels) {
++                            this.image = Arc::new(RenderImage::new(smallvec::smallvec![image::Frame::new(buffer)]));
++                            this.detail = Detail::Original;
++                            this.zoom = None;
++                            this.scroll.set_offset(point(px(0.0), px(0.0)));
++                        } else { this.detail = Detail::Unavailable; }
++                    }
++                    Err(_) => this.detail = Detail::Unavailable,
++                }
++                cx.notify();
++            });
++        }));
++    }
++
++    fn fit_zoom(&self, window: &Window) -> f32 {
++        let image = self.image.size(0);
++        let available = window.viewport_size();
++        let scale = window.scale_factor();
++        (f32::from(available.width) / (image.width.0 as f32 / scale))
++            .min((f32::from(available.height) - 34.0).max(1.0) / (image.height.0 as f32 / scale))
++            .max(0.001)
++    }
++
++    fn change_zoom(&mut self, action: Zoom, window: &Window, cx: &mut Context<Self>) {
++        let current = self.zoom.unwrap_or_else(|| self.fit_zoom(window));
++        self.zoom = match action {
++            Zoom::Fit => None,
++            Zoom::Actual => Some(1.0),
++            Zoom::In => Some((current * 1.25).clamp(0.01, 32.0)),
++            Zoom::Out => Some((current / 1.25).clamp(0.01, 32.0)),
++        };
++        self.scroll.set_offset(point(px(0.0), px(0.0)));
++        self.pan_start = None;
++        cx.notify();
++    }
++}
++
++impl Render for ImagePreview {
++    fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
++        let image_size = self.image.size(0);
++        let zoom = self.zoom.unwrap_or_else(|| self.fit_zoom(window));
++        let width = px(image_size.width.0 as f32 / window.scale_factor() * zoom);
++        let height = px(image_size.height.0 as f32 / window.scale_factor() * zoom);
++        let available = window.viewport_size();
++        let label = match self.detail {
++            Detail::Image => "Image", Detail::Loading => "Loading original…",
++            Detail::Original => "Original", Detail::Unavailable => "Original unavailable — showing preview",
++        };
++        let mode = self.zoom.map_or_else(|| "Fit".into(), |zoom| format!("{:.0}%", zoom * 100.0));
++        let status = format!("{label}  {} × {}  {mode}", image_size.width.0, image_size.height.0);
++        let button = |id: &'static str, label: &'static str, action: Zoom| div().id(id).px_2().py_1()
++            .rounded_sm().cursor_pointer().hover(|d| d.bg(crate::settings::color("hover")))
++            .on_click(cx.listener(move |this, _, window, cx| this.change_zoom(action, window, cx)))
++            .child(label);
++        let mut viewport = div().id("image-preview-scroll").flex_1().min_h(px(0.0)).w_full()
++            .overflow_scroll().track_scroll(&self.scroll)
++            .on_mouse_down(MouseButton::Left, cx.listener(|this, event: &MouseDownEvent, window, cx| {
++                this.focus.focus(window, cx);
++                this.pan_start = Some((event.position, this.scroll.offset()));
++                cx.stop_propagation();
++            }))
++            .on_mouse_move(cx.listener(|this, event: &MouseMoveEvent, _, cx| {
++                if event.pressed_button == Some(MouseButton::Left) {
++                    if let Some((start, offset)) = this.pan_start {
++                        this.scroll.set_offset(offset + (event.position - start));
++                        cx.notify();
++                    }
++                } else { this.pan_start = None; }
++            }))
++            .on_mouse_up(MouseButton::Left, cx.listener(|this, _, _, _| this.pan_start = None));
++        viewport.style().allow_concurrent_scroll = Some(true);
++        viewport.style().restrict_scroll_to_axis = Some(false);
++        div()
++            .flex().flex_col()
++            .size_full()
++            .bg(rgb(0x151515))
++            .track_focus(&self.focus)
++            .on_key_down(cx.listener(|this, event: &KeyDownEvent, window, cx| {
++                match event.keystroke.key.as_str() {
++                    "escape" => window.remove_window(),
++                    "0" => this.change_zoom(Zoom::Fit, window, cx),
++                    "1" => this.change_zoom(Zoom::Actual, window, cx),
++                    "+" | "=" => this.change_zoom(Zoom::In, window, cx),
++                    "-" => this.change_zoom(Zoom::Out, window, cx),
++                    _ => {},
++                }
++                cx.stop_propagation();
++            }))
++            .child(div().flex().items_center().h(px(34.0)).flex_shrink_0().px_2().text_xs()
++                .bg(crate::settings::color("popover")).text_color(crate::settings::color("foreground"))
++                .child(div().flex_1().child(status))
++                .child(button("zoom-out", "−", Zoom::Out))
++                .child(button("zoom-fit", "Fit", Zoom::Fit))
++                .child(button("zoom-actual", "100%", Zoom::Actual))
++                .child(button("zoom-in", "+", Zoom::In)))
++            .child(viewport
++                .child(div().flex().items_center().justify_center()
++                    .w(width.max(available.width)).h(height.max((available.height - px(34.0)).max(px(1.0))))
++                    .child(img(self.image.clone()).w(width).h(height).flex_shrink_0().object_fit(ObjectFit::Contain))))
++    }
++}
++
++#[cfg(test)]
++mod tests {
++    use super::ImagePreview;
++    use crate::terminal::TerminalView;
++    use gpui::{DevicePixels, Modifiers, MouseButton, TestAppContext, VisualTestContext, size};
++
++    #[gpui::test]
++    fn clicking_cropped_thumbnail_opens_full_image_and_escape_closes_it(cx: &mut TestAppContext) {
++        use base64::Engine;
++
++        cx.update(gpui_base::init);
++        let pixels = base64::engine::general_purpose::STANDARD.encode([255u8, 0, 0].repeat(8));
++        let (terminal, cx) = cx.add_window_view(|window, cx| {
++            let terminal = TerminalView::attach(crate::hc::offline(), "t1".into(), (40, 10), cx);
++            terminal.focus.focus(window, cx);
++            // Display only the middle of a 4x2 image, enlarged to a thumbnail.
++            terminal.grid.borrow_mut().vt.write(format!(
++                "\x1b_Ga=T,f=24,i=7,s=4,v=2,c=6,r=3,x=1,y=0,w=2,h=2,q=2;{pixels}\x1b\\"
++            ).as_bytes());
++            terminal
++        });
++        cx.run_until_parked();
++        let position = terminal.read_with(cx, |terminal, _| {
++            let grid = terminal.grid.borrow();
++            assert_eq!(grid.image_hits.len(), 1);
++            grid.image_hits[0].0.center()
++        });
++        let windows_before = cx.windows().len();
++        cx.simulate_mouse_down(position, MouseButton::Left, Modifiers::default());
++        cx.simulate_mouse_up(position, MouseButton::Left, Modifiers::default());
++        cx.run_until_parked();
++        assert_eq!(cx.windows().len(), windows_before + 1);
++        let preview = cx.windows().into_iter().find_map(|w| w.downcast::<ImagePreview>()).unwrap();
++        preview.read_with(cx, |preview, _| {
++            assert_eq!(preview.image.size(0), size(DevicePixels(4), DevicePixels(2)));
++            assert_eq!(&preview.image.as_bytes(0).unwrap()[..4], &[0, 0, 255, 255]);
++        }).unwrap();
++        let mut preview_cx = VisualTestContext::from_window(preview.into(), cx);
++        preview_cx.simulate_keystrokes("enter a escape");
++        cx.run_until_parked();
++        assert_eq!(cx.windows().len(), windows_before);
++        terminal.read_with(cx, |terminal, _| {
++            assert!(!terminal.selecting);
++            assert!(terminal.grid.borrow().buttons_down.is_empty());
++            assert!(terminal.typed_at.get().is_none(), "preview input reached the terminal");
++        });
++
++        // Shift-click stays available for selection and terminal programs.
++        cx.simulate_mouse_down(position, MouseButton::Left, Modifiers { shift: true, ..Default::default() });
++        cx.simulate_mouse_up(position, MouseButton::Left, Modifiers { shift: true, ..Default::default() });
++        cx.run_until_parked();
++        assert_eq!(cx.windows().len(), windows_before);
++    }
++
++    #[gpui::test]
++    fn closing_parent_closes_its_preview_window(cx: &mut TestAppContext) {
++        use gpui::{QuitMode, RenderImage};
++        use std::sync::Arc;
++
++        cx.update(gpui_base::init);
++        cx.update(|cx| cx.set_quit_mode(QuitMode::Explicit));
++        let (_, cx) = cx.add_window_view(|_, cx| {
++            TerminalView::attach(crate::hc::offline(), "t1".into(), (40, 10), cx)
++        });
++        let image = Arc::new(RenderImage::new(smallvec::smallvec![image::Frame::new(
++            image::RgbaImage::from_pixel(2, 2, image::Rgba([0, 0, 255, 255])),
++        )]));
++        cx.update(|window, cx| super::open(image, window, cx).unwrap());
++        cx.run_until_parked();
++        assert_eq!(cx.windows().len(), 2);
++        cx.update(|window, _| window.remove_window());
++        cx.run_until_parked();
++        assert!(cx.windows().is_empty(), "an orphaned preview kept the app alive");
++    }
++
++    #[gpui::test]
++    fn linked_thumbnail_loads_original_and_supports_actual_size_and_panning(cx: &mut TestAppContext) {
++        use gpui::{ScrollDelta, ScrollWheelEvent, point, px};
++
++        let stamp = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos();
++        let path = std::env::temp_dir().join(format!("herdr-original-{}-{stamp}.png", std::process::id()));
++        // The mock display uses 2× scaling; this image overflows both axes even at 100%.
++        image::RgbaImage::from_pixel(3000, 2000, image::Rgba([12, 34, 56, 255])).save(&path).unwrap();
++        let raw = path.to_string_lossy().replace('\\', "/").replace('%', "%25").replace(' ', "%20").replace('#', "%23");
++        let uri = format!("file://{}{raw}#codex-image-original", if cfg!(windows) { "/" } else { "" });
++        cx.update(gpui_base::init);
++        let (terminal, cx) = cx.add_window_view(|window, cx| {
++            let terminal = TerminalView::attach(crate::hc::offline(), "t1".into(), (40, 10), cx);
++            terminal.focus.focus(window, cx);
++            terminal
++        });
++        cx.run_until_parked();
++        let mut drawing = String::new();
++        for row in 1..=3 {
++            drawing.push_str(&format!("\x1b[{row};1H\x1b]8;;{uri}\x07      \x1b]8;;\x07"));
++        }
++        drawing.push_str("\x1b[H\x1b_Ga=T,f=24,i=7,s=1,v=1,c=6,r=3,C=1,q=2;/wAA\x1b\\");
++        terminal.update(cx, |terminal, cx| { terminal.grid.borrow_mut().vt.write(drawing.as_bytes()); cx.notify(); });
++        cx.run_until_parked();
++        let position = terminal.read_with(cx, |terminal, _| terminal.grid.borrow().image_hits[0].0.center());
++        terminal.read_with(cx, |terminal, _| assert!(terminal.original_image_at(position).is_some()));
++        cx.simulate_click(position, Modifiers::default());
++        cx.run_until_parked();
++        let preview = cx.windows().into_iter().find_map(|w| w.downcast::<ImagePreview>()).unwrap();
++        preview.read_with(cx, |preview, _| {
++            assert_eq!(preview.detail, super::Detail::Original);
++            assert_eq!(preview.image.size(0), size(DevicePixels(3000), DevicePixels(2000)));
++            assert_eq!(&preview.image.as_bytes(0).unwrap()[..4], &[56, 34, 12, 255]);
++        }).unwrap();
++        let mut visual = VisualTestContext::from_window(preview.into(), cx);
++        visual.simulate_keystrokes("1");
++        visual.update(|window, cx| { window.simulate_next_frame(cx); window.draw(cx).clear(cx); });
++        visual.run_until_parked();
++        preview.read_with(cx, |preview, _| {
++            assert_eq!(preview.zoom, Some(1.0));
++            assert!(preview.scroll.max_offset().x > px(0.0));
++            assert!(preview.scroll.max_offset().y > px(0.0));
++        }).unwrap();
++        visual.simulate_event(ScrollWheelEvent {
++            position: point(px(200.0), px(200.0)),
++            delta: ScrollDelta::Pixels(point(px(-80.0), px(-60.0))),
++            ..Default::default()
++        });
++        visual.update(|window, cx| { window.simulate_next_frame(cx); window.draw(cx).clear(cx); });
++        visual.run_until_parked();
++        preview.read_with(cx, |preview, _| {
++            assert!(preview.scroll.offset().x < px(0.0));
++            assert!(preview.scroll.offset().y < px(0.0));
++        }).unwrap();
++        let before_drag = preview.read_with(cx, |preview, _| preview.scroll.offset()).unwrap();
++        visual.simulate_mouse_down(point(px(200.0), px(200.0)), MouseButton::Left, Modifiers::default());
++        visual.simulate_mouse_move(point(px(160.0), px(150.0)), Some(MouseButton::Left), Modifiers::default());
++        visual.simulate_mouse_up(point(px(160.0), px(150.0)), MouseButton::Left, Modifiers::default());
++        visual.run_until_parked();
++        preview.read_with(cx, |preview, _| {
++            assert!(preview.scroll.offset().x < before_drag.x);
++            assert!(preview.scroll.offset().y < before_drag.y);
++        }).unwrap();
++        visual.simulate_keystrokes("0 enter a escape");
++        cx.run_until_parked();
++        assert_eq!(cx.windows().len(), 1);
++        terminal.read_with(cx, |terminal, _| assert!(terminal.typed_at.get().is_none()));
++        std::fs::remove_file(path).unwrap();
++    }
++
++    #[gpui::test]
++    fn unavailable_original_keeps_the_preview_and_escape_still_closes_it(cx: &mut TestAppContext) {
++        use gpui::RenderImage;
++        use std::sync::Arc;
++
++        let stamp = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos();
++        let path = std::env::temp_dir().join(format!("herdr-missing-original-{stamp}.png"));
++        let raw = path.to_string_lossy().replace('\\', "/").replace('%', "%25").replace(' ', "%20").replace('#', "%23");
++        let uri = format!("file://{}{raw}#codex-image-original", if cfg!(windows) { "/" } else { "" });
++        let source = super::OriginalSource::from_uri(&uri, None).unwrap_or_else(|| panic!("Invalid fixture URI: {uri}"));
++        cx.update(gpui_base::init);
++        let (_, cx) = cx.add_window_view(|_, cx| TerminalView::attach(crate::hc::offline(), "t1".into(), (40, 10), cx));
++        let image = Arc::new(RenderImage::new(smallvec::smallvec![image::Frame::new(
++            image::RgbaImage::from_pixel(2, 3, image::Rgba([0, 0, 255, 255])),
++        )]));
++        cx.update(|window, cx| super::open_original(image, Some(source), window, cx).unwrap());
++        cx.run_until_parked();
++        let preview = cx.windows().into_iter().find_map(|w| w.downcast::<ImagePreview>()).unwrap();
++        preview.read_with(cx, |preview, _| {
++            assert_eq!(preview.detail, super::Detail::Unavailable);
++            assert_eq!(preview.image.size(0), size(DevicePixels(2), DevicePixels(3)));
++        }).unwrap();
++        let mut visual = VisualTestContext::from_window(preview.into(), cx);
++        visual.simulate_keystrokes("escape");
++        cx.run_until_parked();
++        assert_eq!(cx.windows().len(), 1);
++    }
++}
+diff --git a/src/terminal/image_preview/original-read.pl b/src/terminal/image_preview/original-read.pl
+new file mode 100644
+index 0000000..611e02f
+--- /dev/null
++++ b/src/terminal/image_preview/original-read.pl
+@@ -0,0 +1,35 @@
++use strict;
++use warnings;
++use JSON::PP;
++use Fcntl qw(:DEFAULT :mode);
++use Time::HiRes ();
++
++my ($mode, $path, $offset, $count, $expected) = @ARGV;
++sysopen(my $file, $path, O_RDONLY | O_NONBLOCK | O_NOFOLLOW)
++    or die "Cannot open image: $!\n";
++binmode($file);
++binmode(STDOUT);
++my @stat = Time::HiRes::stat($file);
++die "Not a regular image file\n" unless @stat && S_ISREG($stat[2]);
++die "Image file is empty or exceeds 32 MiB\n"
++    unless $stat[7] > 0 && $stat[7] <= 32 * 1024 * 1024;
++my $token = join(':', @stat[0, 1, 7, 9, 10]);
++if ($mode eq 'stat') {
++    print encode_json({ size => $stat[7], token => $token });
++    exit 0;
++}
++die "Invalid read request\n"
++    unless $mode eq 'read' && $offset =~ /^\d+$/ && $count =~ /^\d+$/
++    && $count <= 1024 * 1024 && $offset + $count <= $stat[7];
++die "Image changed while loading\n" unless $token eq $expected;
++defined(sysseek($file, $offset, 0)) or die "Cannot seek image: $!\n";
++my $bytes = '';
++while (length($bytes) < $count) {
++    my $read = sysread($file, $bytes, $count - length($bytes), length($bytes));
++    die "Cannot read image: $!\n" unless defined($read);
++    last unless $read;
++}
++@stat = Time::HiRes::stat($file);
++die "Image changed while loading\n"
++    unless length($bytes) == $count && join(':', @stat[0, 1, 7, 9, 10]) eq $token;
++print $bytes;
+diff --git a/src/terminal/image_preview/original.rs b/src/terminal/image_preview/original.rs
+new file mode 100644
+index 0000000..8227f3e
+--- /dev/null
++++ b/src/terminal/image_preview/original.rs
+@@ -0,0 +1,166 @@
++//! Resolve the explicit Codex image reference and read only after a person clicks it.
++
++use anyhow::{Context as _, Result, bail};
++use image::ImageDecoder as _;
++use serde::Deserialize;
++use std::io::Read;
++use std::path::{Path, PathBuf};
++use std::sync::atomic::{AtomicBool, Ordering};
++
++const MAX_FILE: usize = 32 * 1024 * 1024;
++const CHUNK: usize = 1024 * 1024;
++const READER: &str = include_str!("original-read.pl");
++
++#[derive(Clone, Debug, PartialEq, Eq)]
++pub(in crate::terminal) struct OriginalSource {
++    path: PathBuf,
++    machine: Option<String>,
++}
++
++impl OriginalSource {
++    pub(in crate::terminal) fn from_uri(uri: &str, machine: Option<String>) -> Option<Self> {
++        let uri = uri.strip_suffix("#codex-image-original")?;
++        if uri.len() > 8192 || uri.contains(['?', '#']) { return None; }
++        let path = crate::links::file_url_path(uri)?;
++        let text = path.to_str()?;
++        if text.chars().any(char::is_control) || text.starts_with("//") || text.starts_with(r"\\") {
++            return None;
++        }
++        let extension = path.extension()?.to_str()?.to_ascii_lowercase();
++        if !["png", "jpg", "jpeg", "webp", "gif", "bmp", "tif", "tiff"].contains(&extension.as_str()) {
++            return None;
++        }
++        if machine.is_some() {
++            // This reader targets the connected Unix machine, never a file on this computer.
++            if !text.starts_with('/') { return None; }
++        } else if !path.is_absolute() {
++            return None;
++        }
++        Some(Self { path, machine })
++    }
++
++    pub(super) fn load(&self, cancelled: &AtomicBool) -> Result<(u32, u32, Vec<u8>)> {
++        let bytes = match &self.machine {
++            Some(machine) => self.read_remote(machine, cancelled)?,
++            None => read_local(&self.path)?,
++        };
++        if cancelled.load(Ordering::Relaxed) { bail!("Preview closed"); }
++        decode(&bytes)
++    }
++
++    fn read_remote(&self, machine: &str, cancelled: &AtomicBool) -> Result<Vec<u8>> {
++        #[derive(Deserialize)]
++        struct Metadata { size: usize, token: String }
++        let run = |mode: &str, offset: usize, count: usize, token: &str| -> Result<Vec<u8>> {
++            if cancelled.load(Ordering::Relaxed) { bail!("Preview closed"); }
++            let args = vec!["-e".into(), READER.into(), "--".into(), mode.into(),
++                self.path.to_string_lossy().into_owned(), offset.to_string(), count.to_string(), token.into()];
++            let (code, stdout, stderr) = crate::mods::run_remote(machine, "/usr/bin/perl", &args, None)
++                .map_err(anyhow::Error::msg)?;
++            if code != 0 { bail!("{}", String::from_utf8_lossy(&stderr).trim()); }
++            Ok(stdout)
++        };
++        let metadata: Metadata = serde_json::from_slice(&run("stat", 0, 0, "")?)?;
++        if metadata.size == 0 || metadata.size > MAX_FILE { bail!("Image exceeds the preview limit"); }
++        let mut bytes = Vec::with_capacity(metadata.size);
++        while bytes.len() < metadata.size {
++            let count = CHUNK.min(metadata.size - bytes.len());
++            let chunk = run("read", bytes.len(), count, &metadata.token)?;
++            if chunk.len() != count { bail!("Incomplete original image"); }
++            bytes.extend_from_slice(&chunk);
++        }
++        Ok(bytes)
++    }
++}
++
++fn read_local(path: &Path) -> Result<Vec<u8>> {
++    let before = std::fs::symlink_metadata(path)?;
++    if !before.is_file() || before.len() == 0 || before.len() > MAX_FILE as u64 {
++        bail!("Original image is not a bounded regular file");
++    }
++    #[cfg(windows)]
++    {
++        use std::os::windows::fs::MetadataExt as _;
++        use std::path::{Component, Prefix};
++        if !matches!(path.components().next(), Some(Component::Prefix(prefix))
++            if matches!(prefix.kind(), Prefix::Disk(_) | Prefix::VerbatimDisk(_))) {
++            bail!("Only local image files are supported");
++        }
++        // Do not follow a junction or cloud placeholder into another computer's share.
++        for ancestor in path.ancestors().collect::<Vec<_>>().into_iter().rev() {
++            if std::fs::symlink_metadata(ancestor)?.file_attributes() & 0x400 != 0 {
++                bail!("Linked image paths are not supported");
++            }
++        }
++    }
++    let file = std::fs::File::open(path).context("Cannot open original image")?;
++    let metadata = file.metadata()?;
++    if !metadata.is_file() || metadata.len() == 0 || metadata.len() > MAX_FILE as u64 {
++        bail!("Original image is not a bounded regular file");
++    }
++    let mut bytes = Vec::with_capacity(metadata.len() as usize);
++    file.take(MAX_FILE as u64 + 1).read_to_end(&mut bytes)?;
++    if bytes.len() > MAX_FILE { bail!("Original image grew while loading"); }
++    Ok(bytes)
++}
++
++fn decode(bytes: &[u8]) -> Result<(u32, u32, Vec<u8>)> {
++    let mut limits = image::Limits::default();
++    limits.max_alloc = Some(64 * 1024 * 1024);
++    let mut reader = image::ImageReader::new(std::io::Cursor::new(bytes)).with_guessed_format()?;
++    reader.limits(limits.clone());
++    let mut decoder = reader.into_decoder()?;
++    limits.reserve(decoder.total_bytes())?;
++    decoder.set_limits(limits)?;
++    let orientation = decoder.orientation().ok();
++    let mut image = image::DynamicImage::from_decoder(decoder)?;
++    if let Some(orientation) = orientation { image.apply_orientation(orientation); }
++    let (width, height) = (image.width(), image.height());
++    if u64::from(width) * u64::from(height) * 4 > 64 * 1024 * 1024 {
++        bail!("Decoded image exceeds the preview limit");
++    }
++    let mut bgra = image.into_rgba8().into_raw();
++    for pixel in bgra.chunks_exact_mut(4) { pixel.swap(0, 2); }
++    Ok((width, height, bgra))
++}
++
++#[cfg(test)]
++mod tests {
++    use super::{OriginalSource, decode};
++
++    #[test]
++    fn original_references_are_explicit_local_raster_paths() {
++        let source = OriginalSource::from_uri("file:///Users/example/original%20%231.png#codex-image-original", Some("mac".into())).unwrap();
++        assert_eq!(source.path.to_str().unwrap(), "/Users/example/original #1.png");
++        assert_eq!(source.machine.as_deref(), Some("mac"));
++        for uri in ["https://example.com/image.png#codex-image-original", "file://server/share/image.png#codex-image-original",
++            "file:///Users/example/image.svg#codex-image-original", "file:///Users/example/image.png", "file:///Users/example/image%00.png#codex-image-original",
++            "file:////server/share/image.png#codex-image-original"] {
++            assert!(OriginalSource::from_uri(uri, Some("mac".into())).is_none(), "{uri}");
++        }
++    }
++
++    #[test]
++    fn original_decode_retains_resolution_and_converts_gpu_channels() {
++        let image = image::RgbaImage::from_pixel(2048, 1024, image::Rgba([12, 34, 56, 255]));
++        let mut png = std::io::Cursor::new(Vec::new());
++        image::DynamicImage::ImageRgba8(image).write_to(&mut png, image::ImageFormat::Png).unwrap();
++        let (width, height, bgra) = decode(png.get_ref()).unwrap();
++        assert_eq!((width, height), (2048, 1024));
++        assert_eq!(&bgra[..4], &[56, 34, 12, 255]);
++        assert!(decode(b"not an image").is_err());
++    }
++
++    #[test]
++    #[ignore = "requires the configured remote Mac and the task-owned image fixture"]
++    fn remote_original_matches_the_local_fixture_pixel_for_pixel() {
++        let machine = std::env::var("HERDR_PREVIEW_REMOTE_TEST_MACHINE").unwrap();
++        let uri = std::env::var("HERDR_PREVIEW_REMOTE_TEST_URI").unwrap();
++        let local = std::env::var("HERDR_PREVIEW_LOCAL_TEST_FILE").unwrap();
++        let expected = decode(&std::fs::read(local).unwrap()).unwrap();
++        let source = OriginalSource::from_uri(&uri, Some(machine)).unwrap();
++        let actual = source.load(&std::sync::atomic::AtomicBool::new(false)).unwrap();
++        assert_eq!((actual.0, actual.1), (2048, 1024));
++        assert_eq!(actual, expected, "the original lost pixels or changed during remote transfer");
++    }
++}
