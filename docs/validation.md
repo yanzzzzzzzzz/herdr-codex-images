@@ -249,3 +249,17 @@ passed all three jobs (packaging, macOS installer and Windows installer).
 The final local `python -m unittest discover -s tests -v` run passed 26 tests with
 9 macOS-only skips; `python tools/patch_component.py --validate` and
 `git diff --check` also passed.
+
+The corrected native Windows TUI tests also passed. With the same release flags,
+`NO_COLOR` unset and `TERM=xterm-256color`, the command was:
+
+```powershell
+cargo +1.95.0 --config windows-v8-source.toml --config 'profile.release.package."codex-tui".opt-level=0' test --locked --release -p codex-tui --lib --jobs 2 FILTER -- --test-threads=1
+```
+
+Filters: `assistant_images` (1 passed, overlapping the next group),
+`history_cell::messages` (16 passed), `transcript_view::` (274 passed),
+`custom_terminal::` (19 passed), and
+`transcript_image::composer::tests::original_` (1 passed): **310 distinct tests**.
+This is targeted native validation, not the full 6,046-test upstream TUI suite.
+The original user Herdr process remained running throughout validation.
