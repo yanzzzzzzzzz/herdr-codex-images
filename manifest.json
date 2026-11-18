@@ -1,14 +1,22 @@
 {
   "schema": 1,
-  "version": "0.1.0-preview.1",
+  "version": "0.1.0-preview.2",
   "status": "binary-preview",
-  "runtime": {
-    "platform": "macos-arm64",
-    "release": "v0.1.0-preview.1",
-    "asset": "herdr-codex-images-v0.1.0-preview.1-macos-arm64.tar.gz",
-    "core_version": "0.1.21",
-    "signing": "ad-hoc, not notarized",
-    "installation": "side-by-side, isolated app config, existing core sessions preserved"
+  "runtimes": {
+    "macos-arm64": {
+      "release": "v0.1.0-preview.1",
+      "asset": "herdr-codex-images-v0.1.0-preview.1-macos-arm64.tar.gz",
+      "core_version": "0.1.21",
+      "signing": "ad-hoc, not notarized"
+    },
+    "windows-x64": {
+      "release": "v0.1.0-preview.2",
+      "asset": "herdr-codex-images-v0.1.0-preview.2-windows-x64.zip",
+      "core_version": "0.1.21",
+      "signing": "patched executables are not Authenticode-signed",
+      "requirements": "Windows x64, PowerShell 5.1 or 7",
+      "installation": "side-by-side, copied app preferences, shared existing core sessions"
+    }
   },
   "components": {
     "herdr": {

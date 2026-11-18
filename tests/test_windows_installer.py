@@ -236,6 +236,16 @@ return 0; } }'''
         finally:
             self.profiles[1].chmod(stat.S_IWRITE)
 
+    def test_directory_at_profile_path_is_not_deleted(self):
+        self.profiles[1].unlink()
+        self.profiles[1].mkdir()
+        sentinel=self.profiles[1]/'keep-user-file.txt'
+        sentinel.write_bytes(b'user data')
+        self.install(self.package(),success=False)
+        self.assertEqual(sentinel.read_bytes(),b'user data')
+        self.assertEqual(self.profiles[0].read_bytes(),self.baseline[self.profiles[0]])
+        self.assertFalse((self.root/'install.json').exists())
+
     def test_update_and_uninstall_keep_running_version_alive(self):
         package=self.package()
         self.install(package)

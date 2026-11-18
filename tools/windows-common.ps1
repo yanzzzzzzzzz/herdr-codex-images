@@ -51,11 +51,17 @@ function Set-HciState([string]$Root, $State) {
 function Get-HciProfileDocument([string]$Path) {
     $pathFull = [IO.Path]::GetFullPath($Path)
     for ($depth = 0; $depth -lt 20; $depth++) {
-        if (-not (Test-Path -LiteralPath $pathFull)) { break }
-        $item = Get-Item -LiteralPath $pathFull -Force
+        $item = Get-Item -LiteralPath $pathFull -Force -ErrorAction SilentlyContinue
+        if (-not $item) { break }
+        if ($item.PSIsContainer) { throw 'Profile path is a directory; no settings were changed.' }
         if (-not ($item.Attributes -band [IO.FileAttributes]::ReparsePoint)) { break }
         $target = @($item.Target)[0]
-        if (-not $target) { throw 'Cannot resolve profile link.' }
+        if (-not $target) {
+            if ($item.LinkType) { throw 'Cannot resolve profile link.' }
+            # Cloud placeholders (for example OneDrive) are reparse points too,
+            # but are not symbolic links. Read/hydrate them as normal files.
+            break
+        }
         $pathFull = if ([IO.Path]::IsPathRooted($target)) { $target } else { [IO.Path]::GetFullPath((Join-Path $item.DirectoryName $target)) }
     }
     if ($depth -eq 20) { throw 'Profile symbolic-link loop.' }
