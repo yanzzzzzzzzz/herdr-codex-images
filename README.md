@@ -9,6 +9,13 @@ One repository, two independently managed native components.
 are available through GitHub Releases. Windows remains source-only. This is an
 independent project, not an official Herdr or OpenAI release.
 
+## See it in action
+
+![An 800×400 PNG displayed inline in a Herdr terminal on a Mac](docs/images/herdr-inline-images.png)
+
+Actual screenshot from the GitHub installation test on a Mac mini: an 800×400 PNG
+test image rendered directly in the Herdr terminal, without opening an external viewer.
+
 ## Install on a Mac
 
 Run one command in Terminal:

@@ -8,6 +8,13 @@
 **目前提供 Mac Apple Silicon 預編譯預覽版。** Windows 仍採原始碼建置。
 這是獨立整合專案，並非 Herdr 或 OpenAI 官方版本。
 
+## 實際展示
+
+![Mac 上的 Herdr 終端直接顯示 800×400 PNG 圖片](docs/images/herdr-inline-images.png)
+
+Mac mini 從 GitHub 安裝後的實際測試截圖：800×400 PNG 測試圖片直接顯示在 Herdr
+終端內，不需要另外開啟圖片檢視器。
+
 ## Mac 一個指令安裝
 
 在終端執行：
