@@ -182,3 +182,50 @@ reject a zero-exit runtime that produces incorrect migration checksums.
 The source fixture and checksum references are attributed in
 [tests/fixtures](../tests/fixtures/README.md). macOS builds retain their original
 source format; this preparation step applies only to Windows.
+
+### Windows preview v0.1.0-preview.3
+
+The corrected Windows x64 build passed with Rust 1.95.0 / MSVC, release
+`opt-level=1`, `lto=false`, `codegen-units=16`, debug information disabled and
+`strip=debuginfo`, using two build jobs. Source SQL was prepared with:
+
+```powershell
+python tools/prepare_windows_codex.py ../codex --apply
+```
+
+The native build used `cargo +1.95.0 --config windows-v8-source.toml build --locked
+--release -p codex-cli --bin codex --jobs 2`. The local Cargo source replacement
+used the exact pinned rusty_v8 archive to avoid Windows checkout path limits in
+unused Chromium submodules: commit `90a65f887a0c0f048f3784afbcb320b373c8a2e0`, archive
+SHA-256 `32bc3dac906adf19f98ea73f5882bccbdf68cd5e194135fb1b68b14f86178721`.
+No external Cargo.lock package version changed. These are maintainer build details;
+installers do not fetch source or invoke Cargo.
+
+The 228,337,476-byte ZIP derives from integration commit
+`e124073d03daeb0bc1358dd46ef8599fcd27ceb4`. SHA-256:
+`c20f0588faa1154f2a3610b59a487b8c1009262f46cbe5ef31cb2f658f2aff54`.
+The patched Codex executable is 364,297,728 bytes, SHA-256
+`48b9c61cc8ddc407fd4677975e56cd803f854d12f04d291c8f1857dbd4c93182`.
+Version/help/resume-help, companion search, file hashes and all 62 existing-database
+fixture checksums passed. The installed runtime also read the existing user's
+account limits successfully, without a model request or database reset.
+
+Full ZIP installation, doctor, same-version reinstall and uninstall passed in
+separate isolated homes under both Windows PowerShell editions. Project and
+original configuration hashes stayed unchanged; profile bytes were restored exactly.
+
+| Shell | Offline first install | Offline reinstall |
+| --- | --- | --- |
+| Windows PowerShell 5.1 | 31.36 s | 41.56 s |
+| PowerShell 7 | 34.77 s | 41.44 s |
+
+These local measurements exclude download and were taken while native tests were
+compiling. They are not timing guarantees.
+
+The real-user side-by-side upgrade from the unpublished test build took 39.11 s
+offline. All pre-existing core terminals stayed live; original app, configuration,
+authentication, global Codex and shortcut hashes remained unchanged. Existing
+profile content was retained. The app reported no errors. A new real Herdr
+PowerShell terminal selected the bundled 0.169.1 Codex and visibly rendered an
+800×400 PNG fixture. Its existing custom usage sidebar also worked. No pointer
+input or paid model request was used; private screenshots were not published.
