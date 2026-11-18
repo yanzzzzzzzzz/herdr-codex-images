@@ -50,8 +50,9 @@ def main():
         for name in ("hc.exe", "herdr-core.exe"):
             shutil.copy2(args.core_dir / name, payload / "core" / name)
         (payload / "core/conpty").mkdir()
-        for name in ("conpty.dll", "OpenConsole.exe"):
-            shutil.copy2(args.core_dir / "conpty" / name, payload / "core/conpty" / name)
+        shutil.copy2(args.core_dir / "conpty/conpty.dll", payload / "core/conpty/conpty.dll")
+        (payload / "core/conpty/x64").mkdir()
+        shutil.copy2(args.core_dir / "conpty/x64/OpenConsole.exe", payload / "core/conpty/x64/OpenConsole.exe")
         shutil.copytree(args.core_dir / "THIRD-PARTY-NOTICES", payload / "core/THIRD-PARTY-NOTICES")
         crt_files = sorted(args.crt_dir.glob("*.dll"))
         assert {"vcruntime140.dll", "vcruntime140_1.dll"} <= {p.name.lower() for p in crt_files}
