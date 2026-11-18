@@ -5,7 +5,7 @@
 在 Codex CLI 回覆中直接預覽圖片，並在 Herdr 點擊終端圖片查看清晰原圖。
 同一個專案維護 Herdr、Codex 兩個可分別使用的原生元件。
 
-**目前提供 Mac Apple Silicon 預編譯預覽版。** Windows 仍採原始碼建置。
+**目前提供 Mac Apple Silicon 與 Windows x64 預編譯預覽版。**
 這是獨立整合專案，並非 Herdr 或 OpenAI 官方版本。
 
 ## 實際展示
@@ -14,6 +14,31 @@
 
 Mac mini 從 GitHub 安裝後的實際測試截圖：800×400 PNG 測試圖片直接顯示在 Herdr
 終端內，不需要另外開啟圖片檢視器。
+
+## Windows 一個指令安裝
+
+在 Windows PowerShell 5.1 或 PowerShell 7 執行：
+
+```powershell
+irm https://github.com/yanzzzzzzzzz/herdr-codex-images/releases/download/v0.1.0-preview.2/install.ps1 | iex
+```
+
+安裝後自動開啟獨立的 **Herdr Images**。原 Herdr、專案、登入資料及執行中的工作階段都保留，
+不需要管理員、Rust、Git、Python 或自行編譯，所需執行階段 DLL 已包含在套件中。
+
+首次複製 App 設定到獨立目錄，沿用既有 core 的空間與終端。安裝器備份兩種 PowerShell
+的設定檔，只加入一段可移除設定，讓**新的 Herdr 終端**使用圖片版 Codex；一般終端不變。
+
+```powershell
+$images = "$env:LOCALAPPDATA\Programs\herdr-codex-images\herdr-images.cmd"
+& $images doctor
+& $images update
+& $images rollback
+& $images uninstall
+```
+
+解除安裝保留備份、設定與執行中的程式。此為尚未簽章的預覽版。
+詳細路徑與還原方式見 [Windows 安裝說明](docs/installation-windows.md)。
 
 ## Mac 一個指令安裝
 
@@ -58,7 +83,7 @@ Codex 元件可在支援圖片協定的其他終端獨立使用。Herdr 元件�
 | 元件 | 上游版本 | 測試環境 |
 | --- | --- | --- |
 | Herdr app | v0.1.16 | Windows x64、macOS Apple Silicon |
-| Codex CLI | rust-v0.169.1 | macOS Apple Silicon |
+| Codex CLI | rust-v0.169.1 | macOS Apple Silicon、Windows x64 |
 | 遠端原圖 | 既有 Herdr core 連線 | Windows 用戶端 → macOS 主機 |
 
 精確 commit 與修補檔 SHA-256 見 [manifest.json](manifest.json)。其他平台及版本尚未驗證。
@@ -93,7 +118,7 @@ CLI 沿用上游 32 MiB 限制；Herdr 原圖讀取的檔案上限為 32 MiB、�
 
 ## 後續發布
 
-目前 GitHub Releases 提供 Mac 原生套件與雜湊，安裝指令負責下載、驗證及可還原的啟用。
-Windows 預編譯套件與 plugin marketplace 入口尚待完成。詳細範圍見 [發布規劃](docs/distribution.md)。
+目前 GitHub Releases 提供 Mac、Windows 原生套件與雜湊，安裝指令負責下載、驗證及可還原的啟用。
+plugin marketplace 入口尚待完成。詳細範圍見 [發布規劃](docs/distribution.md)。
 
 Apache-2.0；上游授權與聲明收錄於 [licenses](licenses/)。

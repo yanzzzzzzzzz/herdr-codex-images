@@ -7,7 +7,10 @@ Herdr app source: https://github.com/herdrdev/herdr-app
 OpenAI Codex source: https://github.com/openai/codex
 
 Upstream license copies and the Codex NOTICE are preserved in licenses/.
-The macOS preview release redistributes patched Herdr app and Codex binaries,
+The preview runtime releases redistribute patched Herdr app and Codex binaries,
 the official Herdr core, and Codex platform companions/resources. Their licenses
 and notices are included in the release. Herdr core source:
 https://github.com/herdrdev/herdr-core
+
+Windows packages also retain the official ConPTY license/notices and include
+unmodified Microsoft VC++ runtime DLLs with their copyright and license references.

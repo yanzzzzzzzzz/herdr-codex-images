@@ -5,8 +5,8 @@
 Inline image artifacts in Codex CLI, with clickable original-image inspection in Herdr.
 One repository, two independently managed native components.
 
-**Status: binary preview for macOS Apple Silicon.** Prebuilt Herdr, Codex and core
-are available through GitHub Releases. Windows remains source-only. This is an
+**Status: binary preview for macOS Apple Silicon and Windows x64.** Prebuilt Herdr,
+Codex and core are available through GitHub Releases. This is an
 independent project, not an official Herdr or OpenAI release.
 
 ## See it in action
@@ -15,6 +15,33 @@ independent project, not an official Herdr or OpenAI release.
 
 Actual screenshot from the GitHub installation test on a Mac mini: an 800×400 PNG
 test image rendered directly in the Herdr terminal, without opening an external viewer.
+
+## Install on Windows
+
+Run in Windows PowerShell 5.1 or PowerShell 7:
+
+```powershell
+irm https://github.com/yanzzzzzzzzz/herdr-codex-images/releases/download/v0.1.0-preview.2/install.ps1 | iex
+```
+
+This installs and opens a separate **Herdr Images** app. Your original Herdr,
+projects, credentials and running sessions remain intact. No administrator, Rust,
+Git, Python or manual compilation is required; runtime DLLs are included.
+
+App preferences are copied into a separate app home on first install. Existing core
+spaces and terminals remain available. Two backed-up PowerShell profile blocks
+select the bundled Codex in **new Herdr terminals**; ordinary shells are unchanged.
+
+```powershell
+$images = "$env:LOCALAPPDATA\Programs\herdr-codex-images\herdr-images.cmd"
+& $images doctor
+& $images update
+& $images rollback
+& $images uninstall
+```
+
+Uninstall retains backups, settings and running programs. Patched executables are
+an unsigned preview. See [Windows installation and recovery](docs/installation-windows.md).
 
 ## Install on a Mac
 
@@ -67,7 +94,7 @@ requires the reference emitted by the Codex component.
 | Component | Pinned upstream | Validated environment |
 | --- | --- | --- |
 | Herdr app | `v0.1.16` | Windows x64, macOS Apple Silicon |
-| Codex CLI | `rust-v0.169.1` | macOS Apple Silicon |
+| Codex CLI | `rust-v0.169.1` | macOS Apple Silicon, Windows x64 |
 | Cross-machine originals | Existing Herdr core connection | Windows client → macOS host |
 
 Exact commits and patch SHA-256 values are in [manifest.json](manifest.json).
