@@ -17,6 +17,7 @@ def main():
     parser.add_argument('--platform', choices=['windows-x64', 'macos-arm64', 'linux-x64'], required=True)
     parser.add_argument('--binary', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--metadata', type=Path, required=True)
     parser.add_argument('--tag', required=True)
     args = parser.parse_args()
     version = tomllib.loads((ROOT / 'viewer/Cargo.toml').read_text(encoding='utf-8'))['package']['version']
@@ -37,6 +38,9 @@ def main():
         text = template.replace('__TAG__', args.tag).replace('__COMMIT__', commit).replace('__BINARY_SHA256__', digest)
         (args.output / ('install-viewer.' + suffix)).write_bytes(text.encode('utf-8'))
     lock = tomllib.loads((ROOT / 'viewer/Cargo.lock').read_text(encoding='utf-8'))
+    metadata = json.loads(args.metadata.read_text(encoding='utf-8-sig'))
+    by_package = {(p['name'], p['version']): p for p in metadata['packages']}
+    notices = ['Standalone Herdr Image Viewer — dependency notices\n', (ROOT / 'LICENSE').read_text(encoding='utf-8')]
     components = []
     for package in lock['package']:
         component = {'type': 'library', 'name': package['name'], 'version': package['version'],
@@ -45,7 +49,20 @@ def main():
             component['hashes'] = [{'alg': 'SHA-256', 'content': package['checksum']}]
         if 'source' in package:
             component['properties'] = [{'name': 'cargo:source', 'value': package['source']}]
+        details = by_package.get((package['name'], package['version']), {})
+        if details.get('license'):
+            component['licenses'] = [{'expression': details['license']}]
+        notices.append(f"\n\n=== {package['name']} {package['version']} ===\nLicense: {details.get('license', 'See upstream source')}\n")
+        if details.get('manifest_path'):
+            directory = Path(details['manifest_path']).resolve().parent
+            candidates = {p for glob in ['LICENSE*', 'COPYING*', 'COPYRIGHT*', 'NOTICE*'] for p in directory.glob(glob) if p.is_file()}
+            if details.get('license_file'):
+                candidates.add((directory / details['license_file']).resolve())
+            for license_file in sorted(candidates):
+                if license_file.resolve().is_relative_to(directory) and license_file.is_file() and license_file.stat().st_size <= 2 * 1024 * 1024:
+                    notices.append('\n--- ' + license_file.name + ' ---\n' + license_file.read_text(encoding='utf-8', errors='replace'))
         components.append(component)
+    (args.output / f'viewer-NOTICES-{args.platform}.txt').write_text('\n'.join(notices), encoding='utf-8')
     sbom = {'bomFormat': 'CycloneDX', 'specVersion': '1.5', 'version': 1, 'components': components}
     (args.output / f'viewer-sbom-{args.platform}.cdx.json').write_text(json.dumps(sbom, indent=2) + '\n', encoding='utf-8')
     manifest = {'schema': 1, 'tag': args.tag, 'platform': args.platform, 'source_commit': commit,

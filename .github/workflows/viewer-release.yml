@@ -35,13 +35,16 @@ jobs:
       - run: cargo clippy --locked --manifest-path viewer/Cargo.toml --all-targets -- -D warnings
       - run: cargo test --locked --manifest-path viewer/Cargo.toml
       - run: cargo build --release --locked --manifest-path viewer/Cargo.toml
+      - name: Record dependency metadata outside the source checkout
+        shell: bash
+        run: cargo metadata --locked --manifest-path viewer/Cargo.toml --format-version 1 > "$RUNNER_TEMP/viewer-metadata.json"
       - name: Package exact source build
         env:
           RELEASE_TAG: ${{ github.ref_name }}
           PLATFORM: ${{ matrix.platform }}
           EXECUTABLE: ${{ matrix.executable }}
         shell: bash
-        run: python tools/package_viewer.py --tag "$RELEASE_TAG" --platform "$PLATFORM" --binary "viewer/target/release/$EXECUTABLE" --output dist
+        run: python tools/package_viewer.py --tag "$RELEASE_TAG" --platform "$PLATFORM" --binary "viewer/target/release/$EXECUTABLE" --metadata "$RUNNER_TEMP/viewer-metadata.json" --output dist
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: viewer-${{ matrix.platform }}

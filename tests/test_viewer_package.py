@@ -25,7 +25,7 @@ class ViewerPackageTests(unittest.TestCase):
         self.root = Path(self.temp.name) / 'source'
         for directory in ['viewer', 'tools']:
             (self.root / directory).mkdir(parents=True)
-        for relative in ['viewer/Cargo.toml', 'viewer/Cargo.lock', 'tools/install-viewer.ps1.in']:
+        for relative in ['LICENSE', 'viewer/Cargo.toml', 'viewer/Cargo.lock', 'tools/install-viewer.ps1.in']:
             shutil.copyfile(REPO / relative, self.root / relative)
         (self.root / '.gitignore').write_text('dist/\n')
         self.git('init', '-q')
@@ -34,13 +34,15 @@ class ViewerPackageTests(unittest.TestCase):
                  '-c', 'commit.gpgsign=false', 'commit', '-qm', 'fixture')
         self.binary = Path(self.temp.name) / 'binary-fixture'
         self.binary.write_bytes(b'never executed packaging fixture\n')
+        self.metadata = Path(self.temp.name) / 'metadata.json'
+        self.metadata.write_text(json.dumps({'packages': []}))
 
     def git(self, *args):
         return subprocess.check_output(['git', '-C', str(self.root), *args], text=True).strip()
 
     def invoke(self):
         args = ['package_viewer.py', '--tag', 'viewer-v0.2.0-preview.1', '--platform', 'windows-x64',
-                '--binary', str(self.binary), '--output', str(self.root / 'dist')]
+                '--binary', str(self.binary), '--metadata', str(self.metadata), '--output', str(self.root / 'dist')]
         with patch.object(package, 'ROOT', self.root), patch.object(sys, 'argv', args):
             package.main()
 
