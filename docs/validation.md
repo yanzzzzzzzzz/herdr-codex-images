@@ -16,6 +16,35 @@ The existing failed chat was retained; a separate explicit `show` command opened
 its image pane and a native Herdr screenshot confirmed the 800x400 PNG rendered.
 That manual display check does not claim the older chat had automatic monitoring.
 
+The source-attested `viewer-v0.2.0-preview.3` release then passed all three
+platform builds/checks in
+[run 44472393781](https://github.com/yanzzzzzzzzz/herdr-codex-images/actions/runs/44472393781)
+and reports `immutable: true`. The public Windows installer and installed
+helper's `doctor` passed. Six existing protected files retained their hashes,
+and all 12 local core terminals present before the final reinstall remained.
+The active desktop test configuration was also upgraded, retaining its settings
+and all 11 terminals present before that upgrade.
+
+A fresh visible **Codex + Images (fixed)** tab used the released helper and the
+official Codex 0.169.0. The actual Codex request successfully ran
+`Get-Item -LiteralPath .\demo.png | Select-Object FullName, Length`, then returned
+the image link. The helper bound the exact thread ID, automatically published
+one 800x400 image, and a native Herdr screenshot confirmed its rendered side
+pane. No manual `show` was used for this final automatic-display test.
+
+Checks run for this fix:
+
+```sh
+cargo +1.95.0 fmt --manifest-path viewer/Cargo.toml --check
+cargo +1.95.0 clippy --locked --manifest-path viewer/Cargo.toml --all-targets -- -D warnings
+cargo +1.95.0 test --locked --manifest-path viewer/Cargo.toml
+python -m unittest discover -s tests -p test_viewer_package.py -v
+git diff --check
+```
+
+All passed: 9 Windows Rust tests and 2 packaging tests. The live app was already
+running; no existing app, core or conversation was terminated or reset.
+
 ## Standalone Rust viewer: 2026-11-19
 
 `viewer-v0.2.0-preview.2` was built from commit

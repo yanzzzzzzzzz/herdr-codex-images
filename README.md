@@ -36,6 +36,8 @@ curl -fsSL https://github.com/yanzzzzzzzzz/herdr-codex-images/releases/download/
 Choose **Codex + Images** from Herdr's agent menu. Your ordinary Codex entry,
 profiles and existing sessions remain available. The installers verify fixed
 hashes and GitHub build provenance before running the helper.
+Existing ordinary Codex terminals are not monitored automatically. Start
+**Codex + Images** first, then use `/resume` to continue an existing chat.
 
 [Usage, limitations and source install](viewer/README.md) · [Security boundaries](SECURITY.md)
 

@@ -32,6 +32,8 @@ curl -fsSL https://github.com/yanzzzzzzzzz/herdr-codex-images/releases/download/
 
 安裝後從 Herdr 的 agent 選單選 **Codex + Images**。原本 Codex 入口、設定檔與工作階段保留。
 安裝器會先驗證固定雜湊及 GitHub 建置來源，才執行工具。
+已開啟的一般 Codex 終端不會自動啟用圖片監看；請先開啟 **Codex + Images**，
+再用 `/resume` 接續既有對話。
 
 [使用方式、限制與原始碼安裝](viewer/README.md) · [安全界線](SECURITY.md)
 
