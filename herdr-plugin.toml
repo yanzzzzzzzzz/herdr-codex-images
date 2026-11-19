@@ -1,0 +1,29 @@
+id = "yanz.herdr-image-viewer"
+name = "Herdr Image Viewer"
+version = "0.2.0-preview.1"
+min_herdr_version = "0.9.0"
+description = "Installs a standalone Rust image viewer and a desktop mod. Keeps official Herdr and Codex."
+platforms = ["windows", "macos", "linux"]
+
+[[build]]
+command = ["cargo", "build", "--locked", "--release", "--manifest-path", "viewer/Cargo.toml"]
+
+[[build]]
+platforms = ["macos", "linux"]
+command = ["viewer/target/release/herdr-image-viewer", "install-desktop"]
+
+[[build]]
+platforms = ["windows"]
+command = ["viewer/target/release/herdr-image-viewer.exe", "install-desktop"]
+
+[[actions]]
+id = "doctor"
+title = "Image Viewer: check desktop integration"
+platforms = ["macos", "linux"]
+command = ["viewer/target/release/herdr-image-viewer", "doctor"]
+
+[[actions]]
+id = "doctor-windows"
+title = "Image Viewer: check desktop integration"
+platforms = ["windows"]
+command = ["viewer/target/release/herdr-image-viewer.exe", "doctor"]

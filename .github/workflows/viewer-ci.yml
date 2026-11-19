@@ -1,0 +1,27 @@
+name: viewer checks
+on:
+  push:
+    paths: ['viewer/**', 'tools/package_viewer.py', 'tools/install-viewer.*.in', '.github/workflows/viewer-*.yml']
+  pull_request:
+    paths: ['viewer/**', 'tools/package_viewer.py', 'tools/install-viewer.*.in', '.github/workflows/viewer-*.yml']
+permissions:
+  contents: read
+jobs:
+  rust:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2022, macos-15, ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+      - run: cargo fmt --manifest-path viewer/Cargo.toml --check
+      - run: cargo clippy --locked --manifest-path viewer/Cargo.toml --all-targets -- -D warnings
+      - run: cargo test --locked --manifest-path viewer/Cargo.toml

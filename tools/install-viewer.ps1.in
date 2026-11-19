@@ -1,0 +1,50 @@
+# Fixed release bootstrap. No administrator, profile edits, or app/process reset.
+[CmdletBinding()]
+param([string]$AppHome = $(if ($env:HERDR_APP_HOME) {$env:HERDR_APP_HOME} else {Join-Path $env:USERPROFILE '.config/herdr-app'}))
+& {
+$ErrorActionPreference='Stop'
+$ProgressPreference='SilentlyContinue'
+[Net.ServicePointManager]::SecurityProtocol=[Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+if ($env:PROCESSOR_ARCHITECTURE -ne 'AMD64' -and $env:PROCESSOR_ARCHITEW6432 -ne 'AMD64') { throw 'Windows x64 is required.' }
+$repo='yanzzzzzzzzz/herdr-codex-images'
+$tag='__TAG__'
+$url="https://github.com/$repo/releases/download/$tag"
+$stage=Join-Path ([IO.Path]::GetTempPath()) ('herdr-viewer-'+[guid]::NewGuid().ToString('N'))
+$null=New-Item -ItemType Directory -Path $stage
+try {
+    $release=Invoke-RestMethod -Uri "https://api.github.com/repos/$repo/releases/tags/$tag" -Headers @{'User-Agent'='herdr-image-viewer'}
+    if (-not $release.immutable -or $release.draft -or $release.tag_name -ne $tag) { throw 'The release is not published and immutable.' }
+    $binary=Join-Path $stage 'herdr-image-viewer.exe'
+    Invoke-WebRequest -UseBasicParsing "$url/herdr-image-viewer-windows-x64.exe" -OutFile $binary
+    if ((Get-FileHash -LiteralPath $binary -Algorithm SHA256).Hash -ine '__BINARY_SHA256__') { throw 'Viewer checksum mismatch.' }
+    $bundle=Join-Path $stage 'viewer-provenance.jsonl'
+    Invoke-WebRequest -UseBasicParsing "$url/viewer-provenance.jsonl" -OutFile $bundle
+    # An exact official GitHub CLI ZIP is used as the verifier, without installing gh or changing PATH.
+    $verifierArchive=Join-Path $stage 'gh.zip'
+    Invoke-WebRequest -UseBasicParsing 'https://github.com/cli/cli/releases/download/v2.105.0/gh_2.105.0_windows_amd64.zip' -OutFile $verifierArchive
+    if ((Get-FileHash -LiteralPath $verifierArchive -Algorithm SHA256).Hash -ine '8813a72c899900afaa10e3fec8fbc64b908c89dbfe837e95ed2fa500fc140627') { throw 'Verifier checksum mismatch.' }
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    $zip=[IO.Compression.ZipFile]::OpenRead($verifierArchive)
+    try {
+        $entries=@($zip.Entries | Where-Object {$_.FullName -match '(^|/)bin/gh\.exe$'})
+        if ($entries.Count -ne 1) { throw 'Invalid verifier archive.' }
+        $gh=Join-Path $stage 'gh.exe'
+        [IO.Compression.ZipFileExtensions]::ExtractToFile($entries[0],$gh)
+    } finally {$zip.Dispose()}
+    $verified=& $gh attestation verify $binary --bundle $bundle --repo $repo --signer-workflow "$repo/.github/workflows/viewer-release.yml" --source-ref "refs/tags/$tag" --source-digest '__COMMIT__' --deny-self-hosted-runners --format json
+    if ($LASTEXITCODE) { throw 'Build provenance verification failed; nothing was installed.' }
+    $certificates=@(($verified -join "`n") | ConvertFrom-Json)
+    if (-not $certificates.Count) { throw 'Missing verified certificate.' }
+    foreach ($item in $certificates) {
+        if ($item.verificationResult.signature.certificate.sourceRepositoryIdentifier -ne '1462573185') { throw 'Unexpected source repository ID.' }
+    }
+    & $binary --app-home $AppHome install-desktop
+    if ($LASTEXITCODE) { throw 'Viewer installation failed.' }
+    Write-Host 'Ready: choose Codex + Images in Herdr. Official Herdr/Codex and running sessions are retained.'
+} finally {
+    $resolved=[IO.Path]::GetFullPath($stage)
+    $temporary=[IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd('\')+'\'
+    if (-not $resolved.StartsWith($temporary,[StringComparison]::OrdinalIgnoreCase) -or (Split-Path $resolved -Leaf) -notmatch '^herdr-viewer-[a-f0-9]{32}$') { throw 'Unsafe cleanup target.' }
+    Remove-Item -LiteralPath $resolved -Recurse -Force
+}
+}

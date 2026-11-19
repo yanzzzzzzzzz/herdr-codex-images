@@ -25,12 +25,7 @@ switch ($Command) {
         if ($LASTEXITCODE) { throw 'Herdr command failed.' }
     }
     'update' {
-        $script = Assert-HciChild $Root (Join-Path $Root ('.update-' + [guid]::NewGuid().ToString('N') + '.ps1'))
-        try {
-            Invoke-WebRequest -UseBasicParsing -Uri 'https://raw.githubusercontent.com/yanzzzzzzzzz/herdr-codex-images/main/install.ps1' -OutFile $script
-            & (Get-HciPowerShell) -NoProfile -ExecutionPolicy Bypass -File $script -InstallRoot $Root
-            if ($LASTEXITCODE) { throw 'Update failed.' }
-        } finally { if (Test-Path -LiteralPath $script) { Remove-Item -LiteralPath $script } }
+        throw 'The legacy native-preview updater is retired. Install an explicit verified standalone viewer release; existing programs and settings are unchanged.'
     }
     'rollback' {
         if (-not $state.previous -or $state.previous -notmatch '^v[0-9][A-Za-z0-9.-]*$') { throw 'No previous release to restore.' }

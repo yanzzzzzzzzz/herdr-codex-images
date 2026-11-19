@@ -1,0 +1,92 @@
+name: viewer source release
+on:
+  push:
+    tags: ['viewer-v*']
+permissions:
+  contents: read
+concurrency:
+  group: viewer-release-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {os: windows-2022, platform: windows-x64, executable: herdr-image-viewer.exe, rustflags: '-C target-feature=+crt-static'}
+          - {os: macos-15, platform: macos-arm64, executable: herdr-image-viewer, rustflags: ''}
+          - {os: ubuntu-24.04, platform: linux-x64, executable: herdr-image-viewer, rustflags: ''}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 35
+    env:
+      RUSTFLAGS: ${{ matrix.rustflags }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: '3.12'
+      - run: cargo fmt --manifest-path viewer/Cargo.toml --check
+      - run: cargo clippy --locked --manifest-path viewer/Cargo.toml --all-targets -- -D warnings
+      - run: cargo test --locked --manifest-path viewer/Cargo.toml
+      - run: cargo build --release --locked --manifest-path viewer/Cargo.toml
+      - name: Package exact source build
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+          PLATFORM: ${{ matrix.platform }}
+          EXECUTABLE: ${{ matrix.executable }}
+        shell: bash
+        run: python tools/package_viewer.py --tag "$RELEASE_TAG" --platform "$PLATFORM" --binary "viewer/target/release/$EXECUTABLE" --output dist
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: viewer-${{ matrix.platform }}
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 14
+  attest-and-publish:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: viewer-*
+          path: dist
+          merge-multiple: true
+      # This job only reads artifacts; no dependency build code runs with the signing token.
+      - name: Attest source-built viewer and bootstrap files
+        id: attest
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
+        with:
+          subject-path: dist/*
+      - name: Export verification bundle and verify without a login
+        env:
+          BUNDLE: ${{ steps.attest.outputs.bundle-path }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          cp "$BUNDLE" dist/viewer-provenance.jsonl
+          gh attestation verify dist/herdr-image-viewer-windows-x64.exe --bundle dist/viewer-provenance.jsonl --repo yanzzzzzzzzz/herdr-codex-images --signer-workflow yanzzzzzzzzz/herdr-codex-images/.github/workflows/viewer-release.yml --source-ref "refs/tags/$RELEASE_TAG" --source-digest "$GITHUB_SHA" --deny-self-hosted-runners
+          (cd dist && sha256sum * > ../SHA256SUMS)
+          mv SHA256SUMS dist/SHA256SUMS
+      - name: Publish complete immutable prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          test "$(gh api "repos/$GITHUB_REPOSITORY/commits/$RELEASE_TAG" --jq .sha)" = "$GITHUB_SHA"
+          gh release create "$RELEASE_TAG" --verify-tag --draft --prerelease --title "Standalone Rust image viewer $RELEASE_TAG" --notes-file docs/viewer-release-notes.md
+          gh release upload "$RELEASE_TAG" dist/*
+          gh release edit "$RELEASE_TAG" --draft=false --prerelease
+          test "$(gh api repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE_TAG --jq .immutable)" = true

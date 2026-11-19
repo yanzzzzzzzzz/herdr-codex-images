@@ -1,0 +1,28 @@
+[package]
+name = "herdr-image-viewer"
+version = "0.2.0-preview.1"
+edition = "2024"
+rust-version = "1.95"
+license = "Apache-2.0"
+description = "Local image previews beside official Codex in the Herdr desktop app"
+repository = "https://github.com/yanzzzzzzzzz/herdr-codex-images"
+
+[dependencies]
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+image = { version = "0.25", default-features = false, features = ["png", "jpeg", "gif", "webp", "bmp"] }
+pulldown-cmark = { version = "0.13", default-features = false }
+regex = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+tempfile = "3"
+url = "2"
+walkdir = "2"
+
+[profile.release]
+opt-level = 2
+lto = false
+codegen-units = 16
+strip = "debuginfo"
+

@@ -1,0 +1,29 @@
+#!/bin/sh
+# Fixed release bootstrap. No sudo, shell-profile edits, or process reset.
+set -eu
+[ "$(uname -s)" = Darwin ] && [ "$(uname -m)" = arm64 ] || { echo 'macOS Apple Silicon is required.' >&2; exit 1; }
+repo=yanzzzzzzzzz/herdr-codex-images
+tag=__TAG__
+url="https://github.com/$repo/releases/download/$tag"
+stage=$(mktemp -d "${TMPDIR:-/tmp}/herdr-viewer.XXXXXX")
+trap 'rm -rf "$stage"' EXIT HUP INT TERM
+curl -fLsS --proto '=https' --tlsv1.2 "https://api.github.com/repos/$repo/releases/tags/$tag" -o "$stage/release.json"
+[ "$(/usr/bin/plutil -extract immutable raw -o - "$stage/release.json")" = true ] || { echo 'Release is not immutable.' >&2; exit 1; }
+[ "$(/usr/bin/plutil -extract draft raw -o - "$stage/release.json")" = false ] || exit 1
+[ "$(/usr/bin/plutil -extract tag_name raw -o - "$stage/release.json")" = "$tag" ] || exit 1
+binary="$stage/herdr-image-viewer"
+curl -fLsS --proto '=https' --tlsv1.2 "$url/herdr-image-viewer-macos-arm64" -o "$binary"
+[ "$(shasum -a 256 "$binary" | cut -d ' ' -f 1)" = '__BINARY_SHA256__' ] || { echo 'Viewer checksum mismatch.' >&2; exit 1; }
+curl -fLsS --proto '=https' --tlsv1.2 "$url/viewer-provenance.jsonl" -o "$stage/bundle.jsonl"
+curl -fLsS --proto '=https' --tlsv1.2 'https://github.com/cli/cli/releases/download/v2.105.0/gh_2.105.0_macOS_arm64.zip' -o "$stage/gh.zip"
+[ "$(shasum -a 256 "$stage/gh.zip" | cut -d ' ' -f 1)" = '2a5d03103ae444927383b93d9ffd65579a26e2eb900ce1cf11f55258d5319ded' ] || { echo 'Verifier checksum mismatch.' >&2; exit 1; }
+member=$(/usr/bin/unzip -Z1 "$stage/gh.zip" | grep -E '(^|/)bin/gh$')
+[ "$(printf '%s\n' "$member" | wc -l | tr -d ' ')" = 1 ] || exit 1
+/usr/bin/unzip -p "$stage/gh.zip" "$member" > "$stage/gh"
+chmod 700 "$stage/gh"
+"$stage/gh" attestation verify "$binary" --bundle "$stage/bundle.jsonl" --repo "$repo" --signer-workflow "$repo/.github/workflows/viewer-release.yml" --source-ref "refs/tags/$tag" --source-digest '__COMMIT__' --deny-self-hosted-runners --format json > "$stage/verified.json"
+"$stage/gh" attestation verify "$binary" --bundle "$stage/bundle.jsonl" --repo "$repo" --source-ref "refs/tags/$tag" --deny-self-hosted-runners --format json --jq '.[].verificationResult.signature.certificate.sourceRepositoryIdentifier' > "$stage/ids"
+[ -s "$stage/ids" ] && ! grep -v '^1462573185$' "$stage/ids" || { echo 'Unexpected source repository ID.' >&2; exit 1; }
+chmod 700 "$binary"
+"$binary" --app-home "${HERDR_APP_HOME:-$HOME/.config/herdr-app}" install-desktop
+echo 'Ready: choose Codex + Images in Herdr. Official Herdr/Codex and running sessions are retained.'

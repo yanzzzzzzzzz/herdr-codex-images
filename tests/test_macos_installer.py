@@ -108,6 +108,12 @@ class MacInstallerTests(unittest.TestCase):
             if path != self.profile or include_profile:
                 self.assertEqual(path.read_bytes(), content, str(path))
 
+    def test_legacy_update_fails_before_network_or_execution(self):
+        self.install(self.package())
+        result = self.manage('update', success=False)
+        self.assertIn('retired', result.stdout + result.stderr)
+        self.assert_user_files_preserved()
+
     def test_install_preserves_projects_and_original_settings(self):
         self.install(self.package())
         self.assert_user_files_preserved()

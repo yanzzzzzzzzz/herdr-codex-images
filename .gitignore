@@ -10,3 +10,4 @@ target/
 *.tar.gz
 .DS_Store
 Thumbs.db
+viewer/target/

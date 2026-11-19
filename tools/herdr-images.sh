@@ -33,10 +33,8 @@ case "${1:-help}" in
     exec "$ROOT/current/Herdr Images.app/Contents/MacOS/Herdr" "$command" "$@"
     ;;
   update)
-    stage=$(mktemp -d "${TMPDIR:-/tmp}/herdr-images-update.XXXXXX")
-    trap 'rm -rf "$stage"' EXIT HUP INT TERM
-    curl -fL --retry 2 https://raw.githubusercontent.com/yanzzzzzzzzz/herdr-codex-images/main/install.sh -o "$stage/install.sh"
-    sh "$stage/install.sh"
+    echo 'The legacy native-preview updater is retired. Use an explicit verified standalone viewer release; no programs or settings were changed.' >&2
+    exit 1
     ;;
   rollback)
     previous=$(readlink "$ROOT/previous" 2>/dev/null || :)

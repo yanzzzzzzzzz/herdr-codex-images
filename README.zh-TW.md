@@ -8,6 +8,39 @@
 **目前提供 Mac Apple Silicon 與 Windows x64 預編譯預覽版。**
 這是獨立整合專案，並非 Herdr 或 OpenAI 官方版本。
 
+## 獨立 Rust 圖片工具（建議）
+
+沿用官方 Herdr 桌面版與官方 Codex CLI，由獨立 Rust 工具和一個桌面 mod，
+把該 Codex 工作階段的圖片回覆自動顯示在旁邊。Viewer 不需要瀏覽器或模型 API key。
+
+![官方 Herdr 與 Codex 搭配獨立 Rust 圖片面板](docs/images/standalone-rust-viewer.png)
+
+Windows 實測：左側是官方 Codex 0.169.0 的圖片連結，右側由 Rust 工具顯示圖片。
+這是獨立預覽面板，圖片不會插入官方 Codex 自己的對話排版。
+
+Windows x64，不需要編譯器或管理員：
+
+```powershell
+irm https://github.com/yanzzzzzzzzz/herdr-codex-images/releases/download/viewer-v0.2.0-preview.1/install-viewer.ps1 | iex
+```
+
+macOS Apple Silicon：
+
+```sh
+curl -fsSL https://github.com/yanzzzzzzzzz/herdr-codex-images/releases/download/viewer-v0.2.0-preview.1/install-viewer.sh | sh
+```
+
+安裝後從 Herdr 的 agent 選單選 **Codex + Images**。原本 Codex 入口、設定檔與工作階段保留。
+安裝器會先驗證固定雜湊及 GitHub 建置來源，才執行工具。
+
+[使用方式、限制與原始碼安裝](viewer/README.md) · [安全界線](SECURITY.md)
+
+## 舊版原生修補預覽
+
+以下是先前修改 Herdr 與 Codex 原生程式的實驗版本。它們採獨立安裝、保留原版，
+但仍是固定舊版上游的自訂執行檔，舊發布也沒有 GitHub 建置來源證明。
+若要沿用官方執行檔，請使用上方的獨立 Rust 版。
+
 ## 實際展示
 
 ![Herdr 裡執行 Codex CLI，並在回覆下方直接顯示圖片](docs/images/herdr-codex-inline-images.png)

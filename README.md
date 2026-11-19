@@ -9,6 +9,43 @@ One repository, two independently managed native components.
 Codex and core are available through GitHub Releases. This is an
 independent project, not an official Herdr or OpenAI release.
 
+## Standalone Rust viewer (recommended)
+
+Keep the official Herdr desktop and official Codex CLI. A small Rust helper and
+one desktop mod show image replies automatically in a pane beside that exact
+Codex session. No browser runtime or model API key is required by the viewer.
+
+![Official Herdr and Codex with the standalone Rust image pane](docs/images/standalone-rust-viewer.png)
+
+Actual Windows test with the installed official Herdr and official Codex 0.169.0.
+The left pane contains Codex's image link; the Rust viewer displays it on the right.
+This is a separate panel, not an image inserted into Codex's own transcript.
+
+Windows x64 (no compiler or administrator):
+
+```powershell
+irm https://github.com/yanzzzzzzzzz/herdr-codex-images/releases/download/viewer-v0.2.0-preview.1/install-viewer.ps1 | iex
+```
+
+macOS Apple Silicon:
+
+```sh
+curl -fsSL https://github.com/yanzzzzzzzzz/herdr-codex-images/releases/download/viewer-v0.2.0-preview.1/install-viewer.sh | sh
+```
+
+Choose **Codex + Images** from Herdr's agent menu. Your ordinary Codex entry,
+profiles and existing sessions remain available. The installers verify fixed
+hashes and GitHub build provenance before running the helper.
+
+[Usage, limitations and source install](viewer/README.md) · [Security boundaries](SECURITY.md)
+
+## Legacy native-patch preview
+
+The sections below describe the earlier experimental Herdr + Codex native patches.
+Those executables replace neither original installation, but they are custom
+builds pinned to older upstream versions. Their older releases have no GitHub
+build attestations. Use the standalone viewer above to keep official binaries.
+
 ## See it in action
 
 ![Codex CLI running inside Herdr, with an image displayed below its reply](docs/images/herdr-codex-inline-images.png)
