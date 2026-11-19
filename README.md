@@ -11,10 +11,11 @@ independent project, not an official Herdr or OpenAI release.
 
 ## See it in action
 
-![An 800×400 PNG displayed inline in a Herdr terminal on a Mac](docs/images/herdr-inline-images.png)
+![Codex CLI running inside Herdr, with an image displayed below its reply](docs/images/herdr-codex-inline-images.png)
 
-Actual screenshot from the GitHub installation test on a Mac mini: an 800×400 PNG
-test image rendered directly in the Herdr terminal, without opening an external viewer.
+Actual Windows screenshot: Codex CLI running inside Herdr, showing the user prompt,
+Codex’s reply and an inline preview of a local 800×400 PNG.
+[Demo setup and graphics requirements](docs/demo.md).
 
 ## Install on Windows
 

@@ -10,10 +10,11 @@
 
 ## 實際展示
 
-![Mac 上的 Herdr 終端直接顯示 800×400 PNG 圖片](docs/images/herdr-inline-images.png)
+![Herdr 裡執行 Codex CLI，並在回覆下方直接顯示圖片](docs/images/herdr-codex-inline-images.png)
 
-Mac mini 從 GitHub 安裝後的實際測試截圖：800×400 PNG 測試圖片直接顯示在 Herdr
-終端內，不需要另外開啟圖片檢視器。
+Windows 實際截圖：在 Herdr 裡開啟 Codex CLI，畫面同時顯示使用者提問、Codex 回覆，
+以及回覆下方的本機 800×400 PNG 圖片預覽。
+[展示重現方式與圖形模式需求](docs/demo.md)。
 
 ## Windows 一個指令安裝
 

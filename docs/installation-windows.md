@@ -12,6 +12,20 @@ Rust, Zig, Git, Python or source compilation is needed. The package includes the
 official core, full Codex companion/resource bundle and application-local VC++ runtime
 DLLs. Patched executables are an independently built preview, not Authenticode-signed.
 
+## Display images in Codex
+
+In a new Herdr PowerShell terminal, use the rich transcript and advertise Herdr's
+Kitty graphics capability for this preview:
+
+```powershell
+$env:TERM = 'xterm-ghostty'
+codex --no-daemon
+```
+
+The installer currently selects the bundled Codex but does not add this terminal
+capability setting automatically. Avoid `--no-alt-screen` for reply previews.
+See the [actual Codex demo](demo.md) for the tested setup.
+
 ## Preserve your existing setup
 
 The original Herdr app, projects, Codex login/chat state and all running core
