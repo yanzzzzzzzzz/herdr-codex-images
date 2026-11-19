@@ -9,3 +9,8 @@
 *.json text eol=lf
 *.patch text eol=lf -whitespace
 *.yml text eol=lf
+viewer/** text eol=lf
+*.sh.in text eol=lf
+*.ps1.in text eol=lf
+*.toml text eol=lf
+.gitignore text eol=lf
