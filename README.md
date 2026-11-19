@@ -39,6 +39,21 @@ hashes and GitHub build provenance before running the helper.
 
 [Usage, limitations and source install](viewer/README.md) · [Security boundaries](SECURITY.md)
 
+### Install with Herdr's plugin manager
+
+If you have Herdr **TUI 0.9+**, Git and Rust **1.95+**, you can build and install
+the desktop integration through its plugin manager:
+
+```sh
+herdr plugin install yanzzzzzzzzz/herdr-codex-images --ref viewer-v0.2.0-preview.2
+```
+
+Then choose **Codex + Images** in Herdr **desktop**. This installs the desktop
+image pane; it does not add image previews to Herdr TUI itself or replace the
+official Herdr/Codex executables. The plugin-manager route has not yet been
+fully live-tested. The prebuilt installers above have been tested on Windows
+and macOS and avoid local compilation.
+
 ## Legacy native-patch preview
 
 The sections below describe the earlier experimental Herdr + Codex native patches.

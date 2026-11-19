@@ -35,6 +35,20 @@ curl -fsSL https://github.com/yanzzzzzzzzz/herdr-codex-images/releases/download/
 
 [使用方式、限制與原始碼安裝](viewer/README.md) · [安全界線](SECURITY.md)
 
+### 使用 Herdr plugin 指令安裝
+
+如果已安裝 Herdr **TUI 0.9+**、Git 與 Rust **1.95+**，也可以透過插件管理器
+編譯並安裝桌面整合：
+
+```sh
+herdr plugin install yanzzzzzzzzz/herdr-codex-images --ref viewer-v0.2.0-preview.2
+```
+
+完成後，在 Herdr **桌面版**選擇 **Codex + Images**。這個指令安裝的是桌面圖片面板，
+不會在 Herdr TUI 內加入圖片預覽，也不會替換官方 Herdr／Codex 執行檔。
+**插件管理器這條路線尚未完整實測**；上方的預編譯安裝方式已在 Windows 與 Mac 測試，
+而且不需要本機編譯。
+
 ## 舊版原生修補預覽
 
 以下是先前修改 Herdr 與 Codex 原生程式的實驗版本。它們採獨立安裝、保留原版，
