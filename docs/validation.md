@@ -1,5 +1,44 @@
 # Validation record
 
+## Standalone Rust viewer: 2026-11-19
+
+`viewer-v0.2.0-preview.2` was built from commit
+`99610998f92bedf37c891ba1e57c139359d5b515` by
+[source release run 44455031737](https://github.com/yanzzzzzzzzz/herdr-codex-images/actions/runs/44455031737).
+Windows x64, macOS ARM64 and Linux x64 source builds/tests passed; the published
+release reports `immutable: true`. Three-platform viewer checks and installer
+validation also passed. Locally, all 7 Rust tests, formatting and Clippy with
+warnings denied passed. Python validation passed 29 tests with 10 macOS-only
+skips; its Windows archive fixtures require a sufficiently short TEMP path.
+
+The public Windows PowerShell 5.1 `irm ... | iex` command passed without a
+GitHub login: initial install 17.25 s, same-version reinstall 18.89 s. Six existing
+protected files (including the official Herdr/Codex programs and authentication)
+retained their hashes, existing menu entries were retained, all 10 existing local
+core terminals remained, and the installed helper's `doctor` passed.
+
+On the Mac mini, the public shell installer passed in a separate app home in
+19.03 s. Five existing protected settings/authentication/profile/package files
+retained their hashes, all 3 existing local core terminals remained, fixture
+preferences were retained, and `doctor` passed. No reset, compiler, Xcode license
+acceptance or process termination was required. This is an installation check;
+the Mac desktop's rendered panel has not been live-tested. Timings include
+downloads and are observations, not guarantees.
+
+Windows live display was separately verified with the official Herdr desktop
+0.1.16 and official Codex CLI 0.169.0. A completed reply containing a local
+800x400 PNG link automatically opened the image beside its exact Codex session.
+The screenshot in the README comes from that test. The helper/mod preserves the
+original pixels rather than enlarging Codex's 48x48 draft thumbnail.
+
+Independent `gh attestation verify` accepted the public Windows binary using
+the exact repository, workflow, tag, source commit and hosted-runner policy.
+Changing one byte in a separate copy caused verification to fail; the modified
+copy was never executed. Provenance is build-origin evidence, not an independent
+audit or an operating-system publisher signature.
+
+## Earlier experimental native patches
+
 Recorded on 2026-11-18 before initial publication. These are targeted local validation
 results, not a claim of a full upstream CI run or every-platform support.
 

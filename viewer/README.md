@@ -64,6 +64,10 @@ Use `--app-home PATH` for a separate Herdr configuration. `--herdr-app PATH`
 selects a specific desktop binary. `codex --codex PATH -- ...` explicitly selects
 the Codex executable. Windows prefers the normal npm vendor executable when
 present so an older experimental image build's PATH block does not win.
+On macOS/Linux, Codex is resolved from your existing PATH. If that PATH still
+selects the older native-patch preview, choose your official executable explicitly
+with `codex --codex /absolute/path/to/codex`; installing this viewer does not remove
+or migrate an older preview's shell configuration.
 
 ## Verified updates
 
