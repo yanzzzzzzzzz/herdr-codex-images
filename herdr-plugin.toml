@@ -1,6 +1,6 @@
 id = "yanz.herdr-image-viewer"
 name = "Herdr Image Viewer"
-version = "0.2.0-preview.1"
+version = "0.2.0-preview.2"
 min_herdr_version = "0.9.0"
 description = "Installs a standalone Rust image viewer and a desktop mod. Keeps official Herdr and Codex."
 platforms = ["windows", "macos", "linux"]

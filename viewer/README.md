@@ -27,7 +27,7 @@ Git and Rust, and installs the same desktop integration; it does not add the
 preview to Herdr TUI itself:
 
 ```sh
-herdr plugin install yanzzzzzzzzz/herdr-codex-images --ref viewer-v0.2.0-preview.1
+herdr plugin install yanzzzzzzzzz/herdr-codex-images --ref viewer-v0.2.0-preview.2
 ```
 
 The TUI frontend's manifest is included, but only the desktop workflow has been
@@ -70,7 +70,7 @@ present so an older experimental image build's PATH block does not win.
 Updates are explicit and require GitHub CLI (`gh`):
 
 ```sh
-herdr-image-viewer update --version viewer-v0.2.0-preview.1
+herdr-image-viewer update --version viewer-v0.2.0-preview.2
 ```
 
 There is no background update service. Updates reject draft/mutable releases,
@@ -81,7 +81,7 @@ An already running version stays in place. Reopen Codex + Images to use a new on
 Independent verification after downloading a release asset and its bundle:
 
 ```sh
-gh attestation verify herdr-image-viewer-windows-x64.exe --bundle viewer-provenance.jsonl --repo yanzzzzzzzzz/herdr-codex-images --signer-workflow yanzzzzzzzzz/herdr-codex-images/.github/workflows/viewer-release.yml --source-ref refs/tags/viewer-v0.2.0-preview.1 --deny-self-hosted-runners
+gh attestation verify herdr-image-viewer-windows-x64.exe --bundle viewer-provenance.jsonl --repo yanzzzzzzzzz/herdr-codex-images --signer-workflow yanzzzzzzzzz/herdr-codex-images/.github/workflows/viewer-release.yml --source-ref refs/tags/viewer-v0.2.0-preview.2 --deny-self-hosted-runners
 ```
 
 The release includes source-commit manifests and CycloneDX dependency inventories.

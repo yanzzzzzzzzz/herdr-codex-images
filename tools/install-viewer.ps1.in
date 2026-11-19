@@ -4,6 +4,12 @@ param([string]$AppHome = $(if ($env:HERDR_APP_HOME) {$env:HERDR_APP_HOME} else {
 & {
 $ErrorActionPreference='Stop'
 $ProgressPreference='SilentlyContinue'
+function Get-ViewerSha256([string]$Path) {
+    $stream=[IO.File]::OpenRead($Path)
+    $sha=[Security.Cryptography.SHA256]::Create()
+    try {[BitConverter]::ToString($sha.ComputeHash($stream)).Replace('-','').ToLowerInvariant()}
+    finally {$sha.Dispose();$stream.Dispose()}
+}
 [Net.ServicePointManager]::SecurityProtocol=[Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
 if ($env:PROCESSOR_ARCHITECTURE -ne 'AMD64' -and $env:PROCESSOR_ARCHITEW6432 -ne 'AMD64') { throw 'Windows x64 is required.' }
 $repo='yanzzzzzzzzz/herdr-codex-images'
@@ -16,13 +22,13 @@ try {
     if (-not $release.immutable -or $release.draft -or $release.tag_name -ne $tag) { throw 'The release is not published and immutable.' }
     $binary=Join-Path $stage 'herdr-image-viewer.exe'
     Invoke-WebRequest -UseBasicParsing "$url/herdr-image-viewer-windows-x64.exe" -OutFile $binary
-    if ((Get-FileHash -LiteralPath $binary -Algorithm SHA256).Hash -ine '__BINARY_SHA256__') { throw 'Viewer checksum mismatch.' }
+    if ((Get-ViewerSha256 $binary) -ine '__BINARY_SHA256__') { throw 'Viewer checksum mismatch.' }
     $bundle=Join-Path $stage 'viewer-provenance.jsonl'
     Invoke-WebRequest -UseBasicParsing "$url/viewer-provenance.jsonl" -OutFile $bundle
     # An exact official GitHub CLI ZIP is used as the verifier, without installing gh or changing PATH.
     $verifierArchive=Join-Path $stage 'gh.zip'
     Invoke-WebRequest -UseBasicParsing 'https://github.com/cli/cli/releases/download/v2.105.0/gh_2.105.0_windows_amd64.zip' -OutFile $verifierArchive
-    if ((Get-FileHash -LiteralPath $verifierArchive -Algorithm SHA256).Hash -ine '8813a72c899900afaa10e3fec8fbc64b908c89dbfe837e95ed2fa500fc140627') { throw 'Verifier checksum mismatch.' }
+    if ((Get-ViewerSha256 $verifierArchive) -ine '8813a72c899900afaa10e3fec8fbc64b908c89dbfe837e95ed2fa500fc140627') { throw 'Verifier checksum mismatch.' }
     Add-Type -AssemblyName System.IO.Compression.FileSystem
     $zip=[IO.Compression.ZipFile]::OpenRead($verifierArchive)
     try {
