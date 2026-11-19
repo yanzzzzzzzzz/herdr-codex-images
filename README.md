@@ -24,13 +24,13 @@ This is a separate panel, not an image inserted into Codex's own transcript.
 Windows x64 (no compiler or administrator):
 
 ```powershell
-irm https://github.com/yanzzzzzzzzz/herdr-codex-images/releases/download/viewer-v0.2.0-preview.2/install-viewer.ps1 | iex
+irm https://github.com/yanzzzzzzzzz/herdr-codex-images/releases/download/viewer-v0.2.0-preview.3/install-viewer.ps1 | iex
 ```
 
 macOS Apple Silicon:
 
 ```sh
-curl -fsSL https://github.com/yanzzzzzzzzz/herdr-codex-images/releases/download/viewer-v0.2.0-preview.2/install-viewer.sh | sh
+curl -fsSL https://github.com/yanzzzzzzzzz/herdr-codex-images/releases/download/viewer-v0.2.0-preview.3/install-viewer.sh | sh
 ```
 
 Choose **Codex + Images** from Herdr's agent menu. Your ordinary Codex entry,
@@ -45,7 +45,7 @@ If you have Herdr **TUI 0.9+**, Git and Rust **1.95+**, you can build and instal
 the desktop integration through its plugin manager:
 
 ```sh
-herdr plugin install yanzzzzzzzzz/herdr-codex-images --ref viewer-v0.2.0-preview.2
+herdr plugin install yanzzzzzzzzz/herdr-codex-images --ref viewer-v0.2.0-preview.3
 ```
 
 Then choose **Codex + Images** in Herdr **desktop**. This installs the desktop

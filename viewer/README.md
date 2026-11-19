@@ -27,7 +27,7 @@ Git and Rust, and installs the same desktop integration; it does not add the
 preview to Herdr TUI itself:
 
 ```sh
-herdr plugin install yanzzzzzzzzz/herdr-codex-images --ref viewer-v0.2.0-preview.2
+herdr plugin install yanzzzzzzzzz/herdr-codex-images --ref viewer-v0.2.0-preview.3
 ```
 
 The TUI frontend's manifest is included, but only the desktop workflow has been
@@ -69,12 +69,27 @@ selects the older native-patch preview, choose your official executable explicit
 with `codex --codex /absolute/path/to/codex`; installing this viewer does not remove
 or migrate an older preview's shell configuration.
 
+## Troubleshooting
+
+Existing ordinary Codex terminals are not attached automatically. Start from
+**Codex + Images**, then use `/resume` if you want to continue an older chat.
+The image pane opens when the wrapper starts. A space or tab named "Images"
+does not itself enable monitoring. Images must be linked in the completed reply;
+`Viewed Image` tool output alone is not supported by this preview.
+
+On Windows, `registered Core launch requires an installed app` can occur when
+an unpackaged CLI inherits `CODEX_WINDOWS_REGISTERED_CORE=1` from the Codex
+desktop app. Version `0.2.0-preview.3` removes that desktop-only flag from the
+launched CLI's environment. Sandbox permissions and global configuration remain
+unchanged. Existing CLI processes keep their original environment; start a new
+**Codex + Images** terminal after updating, then resume your chat there.
+
 ## Verified updates
 
 Updates are explicit and require GitHub CLI (`gh`):
 
 ```sh
-herdr-image-viewer update --version viewer-v0.2.0-preview.2
+herdr-image-viewer update --version viewer-v0.2.0-preview.3
 ```
 
 There is no background update service. Updates reject draft/mutable releases,
@@ -85,7 +100,7 @@ An already running version stays in place. Reopen Codex + Images to use a new on
 Independent verification after downloading a release asset and its bundle:
 
 ```sh
-gh attestation verify herdr-image-viewer-windows-x64.exe --bundle viewer-provenance.jsonl --repo yanzzzzzzzzz/herdr-codex-images --signer-workflow yanzzzzzzzzz/herdr-codex-images/.github/workflows/viewer-release.yml --source-ref refs/tags/viewer-v0.2.0-preview.2 --deny-self-hosted-runners
+gh attestation verify herdr-image-viewer-windows-x64.exe --bundle viewer-provenance.jsonl --repo yanzzzzzzzzz/herdr-codex-images --signer-workflow yanzzzzzzzzz/herdr-codex-images/.github/workflows/viewer-release.yml --source-ref refs/tags/viewer-v0.2.0-preview.3 --deny-self-hosted-runners
 ```
 
 The release includes source-commit manifests and CycloneDX dependency inventories.

@@ -247,6 +247,14 @@ fn installed_codex() -> PathBuf {
     PathBuf::from("codex")
 }
 
+fn standalone_codex(mut command: Command) -> Command {
+    // A CLI installed through npm has no Windows app package identity. Herdr
+    // can inherit this desktop-only request when started by the Codex app.
+    // Let the standalone CLI use its own sandbox runtime; keep its policy.
+    command.env_remove("CODEX_WINDOWS_REGISTERED_CORE");
+    command
+}
+
 pub fn launch(cx: &ContextPaths, codex: Option<PathBuf>, mut args: Vec<String>) -> Result<()> {
     if args
         .iter()
@@ -310,7 +318,7 @@ pub fn launch(cx: &ContextPaths, codex: Option<PathBuf>, mut args: Vec<String>) 
             std::thread::sleep(Duration::from_millis(650));
         }
     });
-    let status = Command::new(codex.unwrap_or_else(installed_codex))
+    let status = standalone_codex(Command::new(codex.unwrap_or_else(installed_codex)))
         .args(["-c", "tui.status_line=[\"thread-id\"]"])
         .args(args)
         .env("HERDR_APP_HOME", &cx.home)
@@ -334,6 +342,42 @@ pub fn launch(cx: &ContextPaths, codex: Option<PathBuf>, mut args: Vec<String>) 
 mod tests {
     use super::*;
     const ID: &str = "01a1f16a-b961-7a30-8e37-ff45f5d601d4";
+    #[test]
+    fn standalone_launch_excludes_the_desktop_package_request() {
+        let mut inherited = Command::new("codex");
+        inherited.env("CODEX_WINDOWS_REGISTERED_CORE", "1");
+        inherited.env("VIEWER_TEST_PRESERVED", "keep");
+        let command = standalone_codex(inherited);
+        let environment: std::collections::BTreeMap<_, _> = command.get_envs().collect();
+        assert_eq!(
+            environment.get(std::ffi::OsStr::new("CODEX_WINDOWS_REGISTERED_CORE")),
+            Some(&None)
+        );
+        assert_eq!(
+            environment.get(std::ffi::OsStr::new("VIEWER_TEST_PRESERVED")),
+            Some(&Some(std::ffi::OsStr::new("keep")))
+        );
+        assert!(command.get_args().next().is_none());
+    }
+
+    #[cfg(windows)]
+    #[test]
+    fn standalone_child_really_does_not_receive_the_desktop_flag() {
+        let mut inherited = Command::new("cmd.exe");
+        inherited.env("CODEX_WINDOWS_REGISTERED_CORE", "1");
+        inherited.env("VIEWER_TEST_PRESERVED", "keep");
+        let output = standalone_codex(inherited)
+            .args([
+                "/D",
+                "/C",
+                "if defined CODEX_WINDOWS_REGISTERED_CORE (exit /b 9) else (echo %VIEWER_TEST_PRESERVED%)",
+            ])
+            .output()
+            .unwrap();
+        assert!(output.status.success());
+        assert_eq!(String::from_utf8_lossy(&output.stdout).trim(), "keep");
+    }
+
     #[test]
     fn only_the_footer_can_bind_a_session() {
         assert_eq!(footer_thread(&format!("prompt {ID}\n1\n2\n3\n4\n5")), None);

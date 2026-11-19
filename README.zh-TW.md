@@ -21,13 +21,13 @@ Windows 實測：左側是官方 Codex 0.169.0 的圖片連結，右側由 Rust 
 Windows x64，不需要編譯器或管理員：
 
 ```powershell
-irm https://github.com/yanzzzzzzzzz/herdr-codex-images/releases/download/viewer-v0.2.0-preview.2/install-viewer.ps1 | iex
+irm https://github.com/yanzzzzzzzzz/herdr-codex-images/releases/download/viewer-v0.2.0-preview.3/install-viewer.ps1 | iex
 ```
 
 macOS Apple Silicon：
 
 ```sh
-curl -fsSL https://github.com/yanzzzzzzzzz/herdr-codex-images/releases/download/viewer-v0.2.0-preview.2/install-viewer.sh | sh
+curl -fsSL https://github.com/yanzzzzzzzzz/herdr-codex-images/releases/download/viewer-v0.2.0-preview.3/install-viewer.sh | sh
 ```
 
 安裝後從 Herdr 的 agent 選單選 **Codex + Images**。原本 Codex 入口、設定檔與工作階段保留。
@@ -41,7 +41,7 @@ curl -fsSL https://github.com/yanzzzzzzzzz/herdr-codex-images/releases/download/
 編譯並安裝桌面整合：
 
 ```sh
-herdr plugin install yanzzzzzzzzz/herdr-codex-images --ref viewer-v0.2.0-preview.2
+herdr plugin install yanzzzzzzzzz/herdr-codex-images --ref viewer-v0.2.0-preview.3
 ```
 
 完成後，在 Herdr **桌面版**選擇 **Codex + Images**。這個指令安裝的是桌面圖片面板，

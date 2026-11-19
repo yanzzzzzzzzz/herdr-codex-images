@@ -41,7 +41,7 @@ class ViewerPackageTests(unittest.TestCase):
         return subprocess.check_output(['git', '-C', str(self.root), *args], text=True).strip()
 
     def invoke(self):
-        args = ['package_viewer.py', '--tag', 'viewer-v0.2.0-preview.2', '--platform', 'windows-x64',
+        args = ['package_viewer.py', '--tag', 'viewer-v0.2.0-preview.3', '--platform', 'windows-x64',
                 '--binary', str(self.binary), '--metadata', str(self.metadata), '--output', str(self.root / 'dist')]
         with patch.object(package, 'ROOT', self.root), patch.object(sys, 'argv', args):
             package.main()

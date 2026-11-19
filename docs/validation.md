@@ -1,5 +1,21 @@
 # Validation record
 
+## Windows standalone launch fix: 2026-11-19
+
+The reported `registered Core launch requires an installed app` failure was
+reproduced with the installed official Codex CLI 0.169.0 and the inherited
+`CODEX_WINDOWS_REGISTERED_CORE=1` flag. The same `codex sandbox` command with
+the `:read-only` profile succeeded after removing only that environment flag,
+and read the existing 107,211-byte demo PNG. No model call or global configuration
+change was used for this check.
+
+The wrapper now excludes that flag from its child. Regression coverage verifies
+the command environment and launches a real Windows child to check that the flag
+is absent while unrelated variables survive. All 9 Windows Rust tests passed.
+The existing failed chat was retained; a separate explicit `show` command opened
+its image pane and a native Herdr screenshot confirmed the 800x400 PNG rendered.
+That manual display check does not claim the older chat had automatic monitoring.
+
 ## Standalone Rust viewer: 2026-11-19
 
 `viewer-v0.2.0-preview.2` was built from commit

@@ -1,4 +1,7 @@
 The standalone Rust viewer keeps the official Herdr desktop and official Codex CLI.
+This update fixes Windows launches inherited from the Codex desktop app: the
+standalone CLI no longer receives the desktop-only registered-Core request.
+It keeps the CLI's sandbox permissions and the user's global configuration.
 It installs one desktop mod, a versioned helper and a separate **Codex + Images**
 menu entry. Image replies appear automatically in a pane beside that Codex session.
 
